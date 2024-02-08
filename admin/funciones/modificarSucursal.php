@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include("proteger.php");
 include("../conexion.php");
 include("cambiarString.php");

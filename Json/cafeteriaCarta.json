@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "titulo":"1 bocha",
+        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
+        "imagen":"/bgSus.jpg",
+        "precio":"1000$",
+        "destacado":"0"
+    },
+    {
+        "id": 2,
+        "titulo":"2 bochas",
+        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
+        "imagen":"/bgSus.jpg",
+        "precio":"1300$",
+        "destacado":"1"
+    },
+    {
+        "id": 3,
+        "titulo":"3 bochas",
+        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
+        "imagen":"/bgSus.jpg",
+        "precio":"1700$",
+        "destacado":"1"
+    },
+    {
+        "id": 4,
+        "titulo":"Helados",
+        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
+        "imagen":"/bgSus.jpg",
+        "precio":"2000$",
+        "destacado":"0"
+    }
+   
+]

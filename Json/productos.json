@@ -1,1 +1,58 @@
-[{"id":2,"nombre":"Frutilla","imagen":"/helado-frutilla.svg","descripcion":"Manso sabor","destacado":1,"color":"#FFA07A"},{"id":3,"nombre":"Cereza","imagen":"/helado-chocolate.svg","descripcion":"Manso sabor","destacado":1,"color":"#FFD1DC"},{"id":7,"nombre":"Frutilla","imagen":"/helado-frutilla.svg","descripcion":"Manso sabor","destacado":1,"color":"#E6E6FA"},{"id":8,"nombre":"Cereza","imagen":"/helado-chocolate.svg","descripcion":"Manso sabor","destacado":1,"color":"#D8BFD8"},{"id":11,"nombre":"Chocolate","imagen":"/helado-chocolate.svg","descripcion":"Manso sabor","destacado":1,"color":"#BC8F8F"},{"id":12,"nombre":"Frutilla","imagen":"/helado-frutilla.svg","descripcion":"Manso sabor","destacado":1,"color":"#FFA07A"},{"id":13,"nombre":"Cereza","imagen":"/helado-chocolate.svg","descripcion":"Manso sabor","destacado":1,"color":"#FFD1DC"}]
+[
+    {
+        "id": 2,
+        "nombre": "Frutilla",
+        "imagen": "/helado-frutilla.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#FFA07A"
+    },
+    {
+        "id": 3,
+        "nombre": "Cereza",
+        "imagen": "/helado-chocolate.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#FFD1DC"
+    },
+    {
+        "id": 7,
+        "nombre": "Frutilla",
+        "imagen": "/helado-frutilla.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#E6E6FA"
+    },
+    {
+        "id": 8,
+        "nombre": "Cereza",
+        "imagen": "/helado-chocolate.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#D8BFD8"
+    },
+    {
+        "id": 11,
+        "nombre": "Chocolate",
+        "imagen": "/helado-chocolate.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#BC8F8F"
+    },
+    {
+        "id": 12,
+        "nombre": "Frutilla",
+        "imagen": "/helado-frutilla.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#FFA07A"
+    },
+    {
+        "id": 13,
+        "nombre": "Cereza",
+        "imagen": "/helado-chocolate.svg",
+        "descripcion": "Manso sabor",
+        "destacado": 1,
+        "color": "#FFD1DC"
+    }
+]

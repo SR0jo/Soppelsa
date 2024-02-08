@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include("proteger.php");
 $id = $_GET["id"];
 include("../conexion.php");
