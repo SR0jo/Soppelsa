@@ -1,5 +1,5 @@
 1:HL["/_next/static/css/3bbb77197c882c4d.css","style",{"crossOrigin":""}]
-0:["afBi4R-tmsbonj96JPo-j",[[["",{"children":["Pages",{"children":["CartaVirtualMinimalista",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],"$L2",[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/3bbb77197c882c4d.css","precedence":"next","crossOrigin":""}]],"$L3"]]]]
+0:["Cs4eKWm0MphWLgJrXdXHI",[[["",{"children":["Pages",{"children":["CartaVirtualMinimalista",{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],"$L2",[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/3bbb77197c882c4d.css","precedence":"next","crossOrigin":""}]],"$L3"]]]]
 4:I[57410,["115","static/chunks/115-ba7706eceeed5774.js","396","static/chunks/396-eda955772785c067.js","566","static/chunks/566-7669a367a8ed6d23.js","318","static/chunks/318-8d5a6d8c3f0e2e76.js","185","static/chunks/app/layout-a07b12c9c7a65636.js"],""]
 5:I[56954,[],""]
 6:I[7264,[],""]
