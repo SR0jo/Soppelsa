@@ -3,10 +3,10 @@
 session_start();
 
 // Supongamos que estos son tus credenciales de inicio de sesión
-$usuario_correcto = "47ucC[TvH.}D69Dk";
-$contraseña_correcta = "q6^hki0Q<{7X1xdRa";
+    $usuario_correcto = "BrunoPeruano";
+    $contraseña_correcta = "q6^hki0Q<{7X1xdRa";
     $captcha = $_POST["captcha"];
-$captcha = $_POST["g-recaptcha-response"];
+    $captcha = $_POST["g-recaptcha-response"];
 
     // Verificar la respuesta del reCAPTCHA
     $secretKey = "6LchDFMpAAAAACHgTyH3uphxdrrPVCQhHnQPetZL";
