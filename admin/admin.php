@@ -1,7 +1,13 @@
 <?php
 include("conexion.php");
 include("funciones/proteger.php");
-// El resto de tu código para pagina_protegida.php va aquí
+session_start();
+
+if (!isset($_SESSION["usuario"])) {
+    // El usuario no está logueado, redirigir al formulario de inicio de sesión
+    header('Location: sesion.php');
+    exit;
+}
 
 ?>
 <!DOCTYPE html>
