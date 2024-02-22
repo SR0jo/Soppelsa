@@ -4,9 +4,9 @@ include("funciones/proteger.php");
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
-    // El usuario no está logueado, redirigir al formulario de inicio de sesión
-    header('Location: sesion.php');
-    exit;
+  // El usuario no está logueado, redirigir al formulario de inicio de sesión
+  header('Location: sesion.php');
+  exit;
 }
 
 ?>
@@ -78,6 +78,9 @@ if (!isset($_SESSION["usuario"])) {
           </li>
           <li class="nav-item">
             <a class="nav-link" id="modificarBorrarPromo">Modificar/borrar promociones</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="modificarUsuario">Modificar usuario y contraseña</a>
           </li>
         </ul>
       </div>
@@ -331,7 +334,7 @@ if (!isset($_SESSION["usuario"])) {
         }
       });
     });
-    
+
     document.getElementById("categorias").addEventListener("click", function() {
       content.innerHTML = `<h2 class="my-4">Advertencia</h2>
       <p>Si se elimina una categoria se eliminaran las relaciones con sus productos/sabores lo que significa que se tendran que modificar los productos/sabores de vuelta para vincularlos a una categoria.</p>
@@ -760,7 +763,7 @@ if (!isset($_SESSION["usuario"])) {
           </div><br>
           <div class="form-group">
             <label for="fondo">Fondo</label><br>';
-        if ($cards["fondo"] == 1){
+        if ($cards["fondo"] == 1) {
           $resultado .= '<input name="fondo" type="checkbox" id="fondo" checked>
           </div>
           <br>
@@ -768,16 +771,16 @@ if (!isset($_SESSION["usuario"])) {
             <label for="color">Color</label><br>
             <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
           </div><br>';
-        }
-        else{
+        } else {
           $resultado .= '<input name="fondo" type="checkbox" id="fondo">
         </div>
           <br>
           <div class="form-group" style="display: none;" id="co">
             <label for="color">Color</label><br>
             <input type="color" name="color" class="form-control-sm">
-          </div><br>';}
-          $resultado .= '<button type="submit" class="btn btn-primary my-3">Guardar</button>
+          </div><br>';
+        }
+        $resultado .= '<button type="submit" class="btn btn-primary my-3">Guardar</button>
         </form>';
 
         return $resultado;
@@ -800,6 +803,20 @@ if (!isset($_SESSION["usuario"])) {
 
       ?>
 
+    });
+    document.getElementById('modificarUsuario').addEventListener('click', function() {
+      content.innerHTML = `<h3>Formulario para cambiar el usuario y la contraseña</h3>
+        <form id="loginForm" method="POST" action=funciones/cambiarUsuario.php">
+            <div class="form-group">
+                <label for="usuario">Usuario</label>
+                <input type="text" class="form-control" id="usuario" name="usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="contrasena">Contraseña</label>
+                <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+        </form>`;
     });
   </script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
