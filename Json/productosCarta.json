@@ -1,35 +1,50 @@
 [
     {
         "id": 1,
-        "titulo":"Copa helada",
-        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
-        "imagen":"/bgSus.jpg",
-        "precio":"1300$",
-        "destacado":"0"
+        "titulo": "bruno",
+        "descripcion": "manso producto",
+        "imagen": "\/sus",
+        "precio": 300,
+        "destacado": 0,
+        "cafeteria": 0,
+        "helados": 1,
+        "idSucursal": 1,
+        "idProductoCarta": 3
     },
     {
         "id": 2,
-        "titulo":"Susanga",
-        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
-        "imagen":"/bgSus.jpg",
-        "precio":"20000$",
-        "destacado":"1"
+        "titulo": "bruno2",
+        "descripcion": "manso producto",
+        "imagen": "\/sus",
+        "precio": 300,
+        "destacado": 0,
+        "cafeteria": 1,
+        "helados": 0,
+        "idSucursal": 1,
+        "idProductoCarta": 4
     },
     {
         "id": 3,
-        "titulo":"Torta",
-        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
-        "imagen":"/bgSus.jpg",
-        "precio":"2700$",
-        "destacado":"1"
+        "titulo": "bruno3",
+        "descripcion": "manso producto",
+        "imagen": "\/sus",
+        "precio": 300,
+        "destacado": 0,
+        "cafeteria": 0,
+        "helados": 1,
+        "idSucursal": 3,
+        "idProductoCarta": 1
     },
     {
         "id": 4,
-        "titulo":"Susanga",
-        "descripcion":"Una descripcion de ejemplo Una descripcion de ",
-        "imagen":"/bgSus.jpg",
-        "precio":"20000$",
-        "destacado":"0"
+        "titulo": "bruno4",
+        "descripcion": "manso producto",
+        "imagen": "\/sus",
+        "precio": 300,
+        "destacado": 0,
+        "cafeteria": 1,
+        "helados": 0,
+        "idSucursal": 12,
+        "idProductoCarta": 1
     }
-   
 ]

@@ -5,7 +5,7 @@ session_start();
 
 if (!isset($_SESSION["usuario"])) {
   // El usuario no está logueado, redirigir al formulario de inicio de sesión
-  header('Location: sesion.php');
+  header('Location: /Pages/Login/');
   exit;
 }
 
@@ -51,16 +51,25 @@ if (!isset($_SESSION["usuario"])) {
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarAdmin">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 flex-wrap">
           <li class="nav-item">
             <a class="nav-link" id="agregarProducto">Agregar producto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="agregarProductoPantalla">Agregar/modificar/borrar producto a las pantallas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="agregarProductoCarta">Agregar/modificar/borrar producto a las cartas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="agregarPromosPantalla">Agregar/modificar/borrar promo a las pantallas</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="agregarSabor">Agregar sabor</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" id="agregarSucursales">Agregar sucursales</a>
-          </li>
+          </li><br>
           <li class="nav-item">
             <a class="nav-link" id="agregarPromociones">Agregar promociones</a>
           </li>
@@ -82,13 +91,16 @@ if (!isset($_SESSION["usuario"])) {
           <li class="nav-item">
             <a class="nav-link" id="modificarUsuario">Modificar usuario y contraseña</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" id="modificarPrecios">Modificar todos los precios</a>
+          </li>
         </ul>
       </div>
     </div>
   </nav>
   <!-- Contenedor que se modifica con js para llenarlo con un formulario -->
   <div id="content" class="container mt-5">
-
+  
   </div>
   <script>
     let cont2 = 0;
@@ -156,11 +168,11 @@ if (!isset($_SESSION["usuario"])) {
         <form action="funciones/crearProducto.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nombreProducto">Nombre</label><br>
-                <input require name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" >
+                <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" >
             </div><br>
             <div class="form-group">
                 <label for="imagenProducto">Imagen del producto</label><br>
-                <input require name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
+                <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
             </div><br>
             <div class="form-group" id="categoria">
             <label>Categorias</label><br>
@@ -188,7 +200,7 @@ if (!isset($_SESSION["usuario"])) {
                 </div><br>
                 <div class="form-group">
                 <label for="descripcion">Descripcion</label><br>
-                <textarea require name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
+                <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
             </div><br>
             <div class="form-group">
                 <label for="destacar">Destacar producto</label><br>
@@ -199,11 +211,422 @@ if (!isset($_SESSION["usuario"])) {
                 <label for="color">Color</label><br>
                 <input type="color" name="color" class="form-control-sm">
             </div><br>
-                
             <button type="submit" class="btn btn-primary my-3">Guardar</button>
-
         </form>`;
+      
+    });
 
+    document.getElementById('agregarProductoPantalla').addEventListener('click', function() {
+      content.innerHTML = `<div class="accordion" id="formularioAcordeon">
+      <div class="card">
+        <div class="card-header" id="headingAgregar">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAgregar" aria-expanded="true" aria-controls="collapseAgregar">
+            Agregar un producto a las pantallas
+          </button>
+        </div>
+
+        <div id="collapseAgregar" class="collapse" aria-labelledby="headingAgregar" data-parent="#formularioAcordeon">
+          <div class="card-body">
+            <h2 class="my-4">Formulario de producto</h2>
+            <form action="funciones/crearProductoPantalla.php" method="post" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="nombreProducto">Nombre</label><br>
+                <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto">
+              </div><br>
+              <div class="form-group">
+                <label for="imagenProducto">Imagen del producto</label><br>
+                <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto">
+              </div><br>
+              <div class="form-group">
+              </div><br>
+              <div class="form-group">
+                <label for="productoGeneral">Producto General</label><br>
+                <input name="productoGeneral" type="checkbox" id="productoGeneral">
+              </div>
+              <br>
+              <div class="form-group" id="precioProducto">
+                <label for="precio">Precio</label><br>
+                <input required name="precio" type="text" class="form-control-sm" id="precio">
+              </div><br>
+              <button type="submit" class="btn btn-primary my-3">Guardar</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" id="headingModificar">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseModificar" aria-expanded="false" aria-controls="collapseModificar">
+            Modificar/Borrar productos de las pantallas
+          </button>
+        </div>
+
+        <div id="collapseModificar" class="collapse" aria-labelledby="headingModificar" data-parent="#formularioAcordeon">
+          <div class="card-body">
+            <form>
+              <div class="row">
+                <?php
+                $query = "SELECT * FROM productosPantalla";
+                $resultado = mysqli_query($conn, $query);
+                $cards = array();
+                while ($row = $resultado->fetch_assoc()) {
+                  $cards[] = $row;
+                }
+                foreach ($cards as $card) {
+                  echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">
+                        <div class="card" style="width: 18rem;">
+                        <img src="../'. $card["imagen"] . '" class="card-img-top" alt="...">
+                        <div class="card-body">
+                        <h5 class="card-title">' . $card["nombre"] . '</h5>
+                        <h5 class="card-title">$' . $card["precio"] . '</h5>
+                        </div>
+                        </div>
+                        </div>';
+                }
+                ?>
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>`;
+      <?php
+      function formularioProductoPantalla($card)
+      {
+        $resultado = "";
+        $resultado .= '<h2 class="my-4">Formulario de producto</h2>
+        <a href="funciones/eliminarProductoPantalla.php?id=' . $card["id"] . '">
+                <button>Eliminar producto</button>
+              </a>
+        <form action="funciones/modificarProducto.php" method="post" enctype="multipart/form-data">
+        <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $card["id"] . ' ">
+          <div class="form-group">
+            <label for="nombreProducto">Nombre</label><br>
+            <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value ="' . $card["nombre"] . '">
+          </div><br>
+          <div class="form-group">
+            <label for="imagenProducto">Nueva imagen del producto</label><br>
+            <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto">
+          </div><br>
+          <div class="form-group">
+          </div><br>
+          <div class="form-group">
+            <label for="productoGeneral">Producto General</label><br>';
+        if ($card["productoGeneral"] == 0)
+          $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
+        else
+          $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral" checked>';
+        $resultado .= '</div>
+          <br>
+          <div class="form-group" id="precioProducto">
+            <label for="precio">Precio</label><br>
+            <input required name="precio" type="text" class="form-control-sm" id="precio"' . $card["precio"] . '>
+          </div><br>
+          <button type="submit" class="btn btn-primary my-3">Guardar</button>
+        </form>';
+        return $resultado;
+      }
+      foreach ($cards as $card) {
+        echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
+                            content.innerHTML = `" . formularioProductoPantalla($card) . "`;
+        });";
+      }
+      ?>
+    });
+
+    document.getElementById('agregarProductoCarta').addEventListener('click', function() {
+      content.innerHTML = `<div class="accordion" id="formularioAcordeon">
+      <div class="card">
+        <div class="card-header" id="headingAgregar">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAgregar" aria-expanded="true" aria-controls="collapseAgregar">
+            Agregar un producto a las cartas
+          </button>
+        </div>
+
+        <div id="collapseAgregar" class="collapse" aria-labelledby="headingAgregar" data-parent="#formularioAcordeon">
+          <div class="card-body">
+            <h2 class="my-4">Formulario de producto para la carta</h2>
+            <form action="funciones/crearProductoCarta.php" method="post" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="nombreProducto">Nombre</label><br>
+                <input required name="titulo" type="text" class="form-control-sm" id="nombreProducto">
+              </div><br>
+              <div class="form-group">
+                <label for="descripcion">Descripcion</label><br>
+                <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto"></textarea>
+              </div><br>
+              <div class="form-group">
+                <label for="imagenProducto">Imagen del producto</label><br>
+                <input required name="imagen" type="file" class="form-control-file" id="imagenProducto">
+              </div><br>
+              <div class="form-group">
+                <label for="sucursales">Sucursales en donde hay del producto</label><br>
+                <?php
+                $query = "SELECT * FROM sucursales";
+                $resultado = mysqli_query($conn, $query);
+                $sucursales = array();
+                while ($row = $resultado->fetch_assoc()) {
+                  $sucursales[] = $row;
+                }
+                foreach ($sucursales as $sucursal) {
+                  echo '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+                }
+                ?>
+              </div><br>
+              <br>
+              <div class="form-group" id="precioProducto">
+                <label for="precio">Precio</label><br>
+                <input required name="precio" type="text" class="form-control-sm" id="precio">
+              </div><br>
+              <div class="form-group">
+                <label for="destacar">Destacar (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>
+                <input name="destacar" type="checkbox" id="destacar">
+            </div>
+            <div class="form-group">
+                <label for="destacar">Categoria helado</label><br>
+                <input name="helado" type="checkbox" id="destacar">
+            </div>
+            <div class="form-group">
+                <label for="destacar">Categoria cafeteria</label><br>
+                <input name="cafeteria" type="checkbox" id="destacar">
+            </div>
+            <div class="form-group">
+                <label for="destacar">Categoria promo</label><br>
+                <input name="promo" type="checkbox" id="destacar">
+            </div>
+            
+              <button type="submit" class="btn btn-primary my-3">Guardar</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" id="headingModificar">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseModificar" aria-expanded="false" aria-controls="collapseModificar">
+            Modificar/Borrar productos de las cartas
+          </button>
+        </div>
+
+        <div id="collapseModificar" class="collapse" aria-labelledby="headingModificar" data-parent="#formularioAcordeon">
+          <div class="card-body">
+            <form>
+              <div class="row">
+              <?php
+              $query = "SELECT * FROM productoscarta";
+              $resultado = mysqli_query($conn, $query);
+              $cards = array();
+              while ($row = $resultado->fetch_assoc()) {
+                $cards[] = $row;
+              }
+
+              foreach ($cards as $card) {
+                echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
+                echo '<div class="card" style="width: 18rem;">';
+                echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
+                echo '<div class="card-body">';
+                echo '<h5 class="card-title">' . $card["titulo"] . '</h5>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+              }
+              ?>
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>`;
+      <?php
+      function formularioProductoCarta($card)
+      {
+        include("conexion.php");
+        $resultado = "";
+        $resultado .= '
+        <h2 class="my-4">Formulario de producto para la carta</h2>
+        <a href="funciones/eliminarProductoCarta.php?id=' . $card["id"] . '">
+                <button>Eliminar Producto</button>
+              </a>
+        <form action="funciones/modificarProductoCarta.php" method="post" enctype="multipart/form-data">
+        <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $card["id"] . '">
+          <div class="form-group">
+            <label for="nombreProducto">Nombre</label><br>
+            <input required name="titulo" type="text" class="form-control-sm" id="nombreProducto" value="' . $card["titulo"] . '">
+          </div><br>
+          <div class="form-group">
+            <label for="descripcion">Descripcion</label><br>
+            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto">' . $card["descripcion"] . '</textarea>
+          </div><br>
+          <div class="form-group">
+            <label for="imagenProducto">Nueva imagen del producto</label><br>
+            <input name="imagen" type="file" class="form-control-file" id="imagenProducto">
+          </div><br>
+          <div class="form-group">
+            <label for="sucursales">Sucursales en donde hay del producto</label><br>';
+        $query = "SELECT * FROM sucursales";
+        $result = mysqli_query($conn, $query);
+        $sucursales = array();
+        while ($row = $result->fetch_assoc()) {
+          $sucursales[] = $row;
+        }
+        $query = "SELECT * FROM productosporsucursal WHERE idProductoCarta = {$card["id"]} ";
+        $result = mysqli_query($conn, $query);
+        $productoSucursal = array();
+        while ($row = $result->fetch_assoc()) {
+          $productoSucursal[] = $row;
+        }
+        foreach ($sucursales as $sucursal) {
+          $aux = false;
+          foreach ($productoSucursal as $producto) {
+            if ($producto["idSucursal"] == $sucursal["id"]) {
+              $aux = true;
+            }
+          }
+          if ($aux)
+            $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal" checked> <p> ' . $sucursal["sucursal"] . '</p>';
+          else
+            $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+        }
+        $resultado .= '</div><br>
+          <br>
+          <div class="form-group" id="precioProducto">
+            <label for="precio">Precio</label><br>
+            <input required name="precio" type="text" class="form-control-sm" id="precio" value="' . $card["precio"] . '">
+          </div><br>
+          <div class="form-group">
+        <label for="destacar">Destacar (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>';
+        if ($card["destacado"] == 1)
+          $resultado .= '<input name="destacar" type="checkbox" id="destacar" checked>';
+        else
+          $resultado .= '<input name="destacar" type="checkbox" id="destacar">';
+        $resultado .= '</div>
+        <div class="form-group">
+        <label for="helado">Categoria helado</label><br>';
+        if ($card["helados"] == 1)
+          $resultado .= '<input name="helado" type="checkbox" id="helado" checked>';
+        else
+          $resultado .= '<input name="helado" type="checkbox" id="helado">';
+        $resultado .= '</div>
+        <div class="form-group">
+        <label for="cafeteria">Categoria cafeteria</label><br>';
+        if ($card["cafeteria"] == 1)
+          $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria" checked>';
+        else
+          $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria">';
+        $resultado .= '</div>
+        <div class="form-group">
+        <label for="promo">Categoria promo</label><br>';
+        if ($card["promos"] == 1)
+          $resultado .= '<input name="promo" type="checkbox" id="promo" checked>';
+        else
+          $resultado .= '<input name="promo" type="checkbox" id="promo">';
+        $resultado .= '</div>
+
+        
+          <button type="submit" class="btn btn-primary my-3">Guardar</button>
+        </form>';
+        return $resultado;
+      }
+      foreach ($cards as $card) {
+        echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
+                            content.innerHTML = `" . formularioProductoCarta($card) . "`;
+        });";
+      }
+      ?>
+    });
+
+    document.getElementById('agregarPromosPantalla').addEventListener('click', function() {
+      content.innerHTML = `<div class="accordion" id="formularioAcordeon">
+      <div class="card">
+        <div class="card-header" id="headingAgregar">
+          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAgregar" aria-expanded="true" aria-controls="collapseAgregar">
+            Agregar un promo a las pantallas
+          </button>
+        </div>
+        <div id="collapseAgregar" class="collapse" aria-labelledby="headingAgregar" data-parent="#formularioAcordeon">
+          <div class="card-body">
+            <h2 class="my-4">Formulario de promo para las pantallas</h2>
+            <form action="funciones/crearPromoPantalla.php" method="post" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="imagenProducto">Imagen de la promo</label><br>
+                <input required name="imagen" type="file" class="form-control-file" id="imagenProducto">
+              </div><br>
+              <div class="form-group" id="precioProducto">
+                <label for="precio">Precio</label><br>
+                <input required name="precio" type="text" class="form-control-sm" id="precio">
+              </div><br>
+              <button type="submit" class="btn btn-primary my-3">Guardar</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" id="headingModificar">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseModificar" aria-expanded="false" aria-controls="collapseModificar">
+            Modificar/Borrar productos de las cartas
+          </button>
+        </div>
+
+        <div id="collapseModificar" class="collapse" aria-labelledby="headingModificar" data-parent="#formularioAcordeon">
+          <div class="card-body">
+            <form>
+              <div class="row">
+              <?php
+              $query = "SELECT * FROM promospantalla";
+              $resultado = mysqli_query($conn, $query);
+              $cards = array();
+              while ($row = $resultado->fetch_assoc()) {
+                $cards[] = $row;
+              }
+
+              foreach ($cards as $card) {
+                echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
+                echo '<div class="card" style="width: 18rem;">';
+                echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
+                echo '<div class="card-body">';
+                echo '<h5 class="card-title">$' . $card["precio"] . '</h5>';
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+              }
+              ?>
+            </form>
+          </div>
+        </div>
+      </div>
+      </div>`;
+      <?php
+      function formularioPromoPantalla($card)
+      {
+        include("conexion.php");
+        $resultado = "";
+        $resultado .= '
+        <h2 class="my-4">Formulario de promo para las pantallas</h2>
+        <a href="funciones/eliminarPromoPantalla.php?id=' . $card["id"] . '">
+                <button>Eliminar Producto</button>
+              </a>
+        <form action="funciones/modificarPromoPantalla.php" method="post" enctype="multipart/form-data">
+        <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $card["id"] . '">
+          <div class="form-group">
+            <label for="imagenProducto">Nueva imagen de la promo</label><br>
+            <input required name="imagen" type="file" class="form-control-file" id="imagenProducto">
+          </div><br>
+          <div class="form-group" id="precioProducto">
+            <label for="precio">Precio</label><br>
+            <input required name="precio" type="text" class="form-control-sm" id="precio" value="' . $card["precio"] . '">
+          </div><br>
+          <button type="submit" class="btn btn-primary my-3">Guardar</button>
+        </form>';
+        return $resultado;
+      }
+      foreach ($cards as $card) {
+        echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
+                            content.innerHTML = `" . formularioPromoPantalla($card) . "`;
+        });";
+      }
+      ?>
     });
 
     document.getElementById('agregarSabor').addEventListener('click', function() {
@@ -211,19 +634,19 @@ if (!isset($_SESSION["usuario"])) {
         <form action="funciones/crearSabor.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nombreSabor">Nombre</label><br>
-                <input require name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" >
+                <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" >
             </div><br>
             <div class="form-group">
             <label for="imagenSabor">Imagen del sabor</label><br>
-                <input require name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
+                <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
             </div><br>
             <div class="form-group">
                 <label for="descripcion">Descripcion</label><br>
-                <textarea require name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
+                <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
             </div><br>
                 <div class="form-group">
                 <label for="categoriaSelect">Categoria</label><br>
-                <select require name="categoriaSelect" class="form-control-sm" id="categoriaSelect" placeholder = "Selecciona una categoria">
+                <select required name="categoriaSelect" class="form-control-sm" id="categoriaSelect" placeholder = "Selecciona una categoria">
                     <option value=""  selected>Selecciona una categoria</option>
                     <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
 
@@ -263,7 +686,7 @@ if (!isset($_SESSION["usuario"])) {
           </div><br>
           <div class="form-group">
             <label for="descripcion">Descripcion</label><br>
-            <textarea require name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal"></textarea>
+            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal"></textarea>
           </div><br>
           <div class="form-group">
             <label for="link">Link de pedidos ya</label><br>
@@ -275,7 +698,7 @@ if (!isset($_SESSION["usuario"])) {
           </div><br>
           <div class="form-group">
             <label for="zonaSelect">Zona</label><br>
-            <select require name="zonaSelect" class="form-control-sm" id="zonaSelect">
+            <select required name="zonaSelect" class="form-control-sm" id="zonaSelect">
               <option value="" disabled selected>Selecciona una zona</option>
               <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
               <?php
@@ -303,15 +726,15 @@ if (!isset($_SESSION["usuario"])) {
         <form action="funciones/crearPromo.php" method="post" enctype="multipart/form-data">
           <div class="form-group">
             <label for="nombre">Nombre</label><br>
-            <input require name="nombre" type="text" class="form-control-sm" id="nombre">
+            <input required name="nombre" type="text" class="form-control-sm" id="nombre">
           </div><br>
           <div class="form-group">
             <label for="imagen">Imagen de la promo</label><br>
-            <input require name="imagen" type="file" class="form-control-file" id="imagen"><br>
+            <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
           </div><br>
           <div class="form-group">
             <label for="descripcion">Descripcion</label><br>
-            <textarea require name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)"></textarea>
+            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)"></textarea>
           </div><br>
           <div class="form-group">
             <label for="fondo">Fondo</label><br>
@@ -356,8 +779,8 @@ if (!isset($_SESSION["usuario"])) {
                     <button>Eliminar categoria</button>
                   </a>
                 <form action="funciones/modificarCategoriaProducto.php" method="post" enctype="multipart/form-data">
-                  <input require name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $card["id"] . ' ">
-                  <input require name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value="' . $card["nombre"] . '">
+                  <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $card["id"] . ' ">
+                  <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value="' . $card["nombre"] . '">
                   <button type="submit" class="btn btn-primary my-3">Guardar</button>
                 </form>
               </div>
@@ -371,7 +794,7 @@ if (!isset($_SESSION["usuario"])) {
             <form action="funciones/crearCategoriaProducto.php" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="nombre">Nombre</label><br>
-                    <input require name="nombre" type="text" class="form-control-sm" id="nombre" >
+                    <input required name="nombre" type="text" class="form-control-sm" id="nombre" >
                 </div><br>
                     
                 <button type="submit" class="btn btn-primary my-3">Guardar</button>
@@ -395,8 +818,8 @@ if (!isset($_SESSION["usuario"])) {
                     <button>Eliminar categoria</button>
                   </a>
                 <form action="funciones/modificarCategoriaSabor.php" method="post" enctype="multipart/form-data">
-                  <input require name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $card["id"] . ' ">
-                  <input require name="nombreSabor" type="text" class="form-control-sm" id="nombreProducto" value="' . $card["nombre"] . '">
+                  <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $card["id"] . ' ">
+                  <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreProducto" value="' . $card["nombre"] . '">
                   <button type="submit" class="btn btn-primary my-3">Guardar</button>
                 </form>
               </div>
@@ -410,7 +833,7 @@ if (!isset($_SESSION["usuario"])) {
             <form action="funciones/crearCategoriaSabor.php" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="nombre">Nombre</label><br>
-                    <input require name="nombre" type="text" class="form-control-sm" id="nombre" >
+                    <input required name="nombre" type="text" class="form-control-sm" id="nombre" >
                 </div><br>
                     
                 <button type="submit" class="btn btn-primary my-3">Guardar</button>
@@ -452,14 +875,14 @@ if (!isset($_SESSION["usuario"])) {
                 <button>Eliminar producto</button>
               </a>
               <form action="funciones/modificarProducto.php" method="post" enctype="multipart/form-data">
-                  <input require name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $cards["id"] . ' ">
+                  <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $cards["id"] . ' ">
                   <div class="form-group">
                       <label for="nombreProducto">Nombre</label><br>
-                      <input require name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value="' . $cards["nombre"] . '">
+                      <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value="' . $cards["nombre"] . '">
                   </div><br>
                   <div class="form-group">
                       <label for="imagenProducto">Reeplazar imagen del producto</label><br>
-                      <input require name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
+                      <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
                   </div><br>
                   <div class="form-group" id="categorias">
                   <label>Categorias</label><br>';
@@ -498,7 +921,7 @@ if (!isset($_SESSION["usuario"])) {
                       </div><br>
                       <div class="form-group">
                       <label for="descripcion">Descripcion</label><br>
-                      <textarea require name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
+                      <textarea required name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
                   </div><br>
                   <div class="form-group">
                       <label for="destacar">Destacar producto</label><br>';
@@ -558,14 +981,14 @@ if (!isset($_SESSION["usuario"])) {
                 <button>Eliminar Sabor</button>
               </a>
               <form action="funciones/modificarSabor.php" method="post" enctype="multipart/form-data">
-                  <input require name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
+                  <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
                   <div class="form-group">
                       <label for="nombreSabor">Nombre</label><br>
-                      <input require name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
+                      <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
                   </div><br>
                   <div class="form-group">
                       <label for="imagenSabor">Reeplazar imagen del sabor</label><br>
-                      <input require name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
+                      <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
                   </div><br>
                   <div class="form-group" id="categoria">
                   <label>Categorias</label><br>';
@@ -604,7 +1027,7 @@ if (!isset($_SESSION["usuario"])) {
                       </div><br>
                       <div class="form-group">
                       <label for="descripcion">Descripcion</label><br>
-                      <textarea require name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
+                      <textarea required name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
                   </div><br>
                   <div class="form-group">
                       <label for="destacar">Destacar sabor</label><br>';
@@ -665,14 +1088,14 @@ if (!isset($_SESSION["usuario"])) {
                 <button>Eliminar Sucursal</button>
               </a>
         <form action="funciones/modificarSucursal.php" method="post" enctype="multipart/form-data">
-        <input require name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
+        <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
           <div class="form-group">
             <label for="nombre">Nombre</label><br>
             <input type="text" class="form-control-sm" id="nombre" placeholder="Nombre de la sucursal" name="nombre" value ="' . $cards["sucursal"] . '">
           </div><br>
           <div class="form-group">
             <label for="descripcion">Descripcion</label><br>
-            <textarea require name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal" >' . $cards["descripcion"] . '</textarea>
+            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal" >' . $cards["descripcion"] . '</textarea>
           </div><br>
           <div class="form-group">
             <label for="link">Link de pedidos ya</label><br>
@@ -684,7 +1107,7 @@ if (!isset($_SESSION["usuario"])) {
           </div><br>
           <div class="form-group">
             <label for="zonaSelect">Zona</label><br>
-            <select require name="zonaSelect" class="form-control-sm" id="zonaSelect">';
+            <select required name="zonaSelect" class="form-control-sm" id="zonaSelect">';
         $query = "SELECT * FROM zonas";
         $sql = mysqli_query($conn, $query);
         $zonas = array();
@@ -748,18 +1171,18 @@ if (!isset($_SESSION["usuario"])) {
                     <button>Eliminar promocion</button>
                   </a>
         <form action="funciones/modificarPromo.php" method="post" enctype="multipart/form-data">
-          <input require name="id" type="hidden" class="form-control-sm" id="id" value="' . $cards["id"] . ' ">
+          <input required name="id" type="hidden" class="form-control-sm" id="id" value="' . $cards["id"] . ' ">
           <div class="form-group">
             <label for="nombre">Nombre</label><br>
-            <input require name="nombre" type="text" class="form-control-sm" id="nombre" value="' . $cards["titulo"] . '">
+            <input required name="nombre" type="text" class="form-control-sm" id="nombre" value="' . $cards["titulo"] . '">
           </div><br>
           <div class="form-group">
             <label for="imagen">Nueva de la promo</label><br>
-            <input require name="imagen" type="file" class="form-control-file" id="imagen"><br>
+            <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
           </div><br>
           <div class="form-group">
             <label for="descripcion">Descripcion</label><br>
-            <textarea require name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)">' . $cards["descripcion"] . '</textarea>
+            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)">' . $cards["descripcion"] . '</textarea>
           </div><br>
           <div class="form-group">
             <label for="fondo">Fondo</label><br>';
@@ -804,6 +1227,7 @@ if (!isset($_SESSION["usuario"])) {
       ?>
 
     });
+
     document.getElementById('modificarUsuario').addEventListener('click', function() {
       content.innerHTML = `<h3>Formulario para cambiar el usuario y la contraseña</h3>
         <form id="loginForm" method="POST" action=funciones/cambiarUsuario.php">
@@ -817,6 +1241,24 @@ if (!isset($_SESSION["usuario"])) {
             </div>
             <button type="submit" class="btn btn-primary">Iniciar sesión</button>
         </form>`;
+    });
+
+    document.getElementById("modificarPrecios").addEventListener("click", function(e) {
+      content.innerHTML = `<h2 class="my-4">Actulizar precios</h2>
+      <form action="actualizarPrecios.php" method="post">
+        <div class="form-group">
+          <label for="fecha">Fecha:</label>
+          <input type="date" class="form-control" id="fecha" name="fecha" required>
+        </div>
+        <div class="form-group">
+          <label for="hora">Hora:</label>
+          <input type="time" class="form-control" id="hora" name="hora" required>
+        </div>
+        <div class="form-group">
+          <label for="porcentaje">Porcentaje:</label>
+          <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" required>
+        </div>
+        <button type="submit" class="btn btn-primary my-3">Guardar</button>`;
     });
   </script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

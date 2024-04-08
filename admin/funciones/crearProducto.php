@@ -23,6 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $descripcion = cambiarString($descripcion);
     $destacar = isset($_POST['destacar']) ? 1 : 0;
     $color = $_POST['color'];
+    $pantalla = isset($_POST['pantallas']) ? 1 : 0;
 
     // Tratar la imagen del producto
 $imagenProducto = $_FILES['imagenProducto']['name'];
@@ -57,6 +58,7 @@ if (move_uploaded_file($ruta_temporal, $carpeta_destino.$imagenProducto)) {
     } else {
         //echo "Error: " . $sql . "<br>" . $conn->error;
     }
+
 }
 
 // No olvides cerrar la conexión a la base de datos cuando ya no la necesites

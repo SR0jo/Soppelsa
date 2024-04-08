@@ -1,5 +1,6 @@
 <?php
-include("admin/conexion.php");
+//Este codigo se ejecutara cada 5 minutos en la pagina para actualizar los json
+include("conexion.php");
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -11,8 +12,10 @@ if ($conn->connect_error) {
 
 // Consultas SQL
 $queries = [
-    'SELECT * FROM productoscarta' => '/productosCarta.json',
+    'SELECT * FROM `productoscarta` INNER JOIN productosporsucursal ON productoscarta.id = productosporsucursal.idProductoCarta' => '/productosCarta.json',
     'SELECT * FROM productospantalla' => '/productosPantalla.json',
+    'SELECT * FROM promospantalla' => '/promosPantalla.json',
+    'SELECT * FROM productoscarta' => '/productoscarta.json',
     'SELECT * FROM productos' => '/productos.json',
     'SELECT * FROM sabores' => '/sabores.json',
     'SELECT * FROM sucursales' => '/sucursales.json',
@@ -26,7 +29,6 @@ $queries = [
      INNER JOIN zonas ON sucursales.idZona = zonas.id' => '/sucursales.json',
     'SELECT * FROM zonas' => '/zonas.json'
 ];
-
 foreach ($queries as $query => $file) {
     // Ejecutar la consulta
     if ($result = $conn->query($query)) {
@@ -50,7 +52,7 @@ foreach ($queries as $query => $file) {
         $json = json_encode($data);
 
         // Guardar el JSON en un archivo
-        file_put_contents("Json/".$file, $json);
+        file_put_contents("../Json" . $file, $json);
 
         // Liberar el conjunto de resultados
         $result->free();
@@ -58,6 +60,46 @@ foreach ($queries as $query => $file) {
         echo "Error: " . $mysqli->error;
     }
 }
+$query = "SELECT * FROM actualizacionprecios where id = (SELECT MAX(id) FROM actualizacionprecios);";
+$resultado = mysqli_query($conn, $query);
+
+if ($resultado) {
+    $fila = mysqli_fetch_assoc($resultado);
+    $actualizar = $fila;
+} else {
+    echo "Error: " . mysqli_error($conn);
+}
+if (isset($actualizar)) {
+    // Obtén la fecha y hora de la base de datos
+    $fecha_db = $actualizar['fecha'];
+    $hora_db = $actualizar['hora'];
+
+    // Obtén la fecha y hora actuales
+    $fecha_actual = date('Y-m-d');
+    $hora_actual = date('H:i:s');
+
+    // Compara las fechas y las horas
+    if ($fecha_db < $fecha_actual || ($fecha_db == $fecha_actual && $hora_db < $hora_actual)) {
+        if ($actualizar["actualizado"] == 0) {
+            $sql = "UPDATE `actualizacionprecios` SET `actualizado` = '1' WHERE `actualizacionprecios`.`id` = {$actualizar["id"]}";
+            $conn->query($sql);
+            // Actualiza los precios en la base de datos
+            $sql = "UPDATE productoscarta SET precio = precio + precio * ({$actualizar["porcentaje"]} / 100)";
+
+            if ($conn->query($sql) === TRUE) {
+                echo "Precios actualizados correctamente";
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+            $sql = "UPDATE productospantalla SET precio = precio + precio * ({$actualizar["porcentaje"]} / 100)";
+
+            if ($conn->query($sql) === TRUE) {
+                echo "Precios actualizados correctamente";
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
+        }
+    }
+}
 // Cerrar la conexión
 $conn->close();
-?>

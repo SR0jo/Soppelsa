@@ -94,7 +94,7 @@ db.connect((err) => {
     fs.writeFileSync(__dirname + '/sucursales.json', json);
   });
   // Consulta SQL
-  query = 'SELECT * FROM zonas';
+  query = 'SELECT * FROM productospantalla';
 
   // Ejecutar la consulta
   db.query(query, (err, results) => {
@@ -106,10 +106,10 @@ db.connect((err) => {
     const json = JSON.stringify(results);
 
     // Guardar el JSON en un archivo
-    fs.writeFileSync(__dirname + '/zonas.json', json);
+    fs.writeFileSync(__dirname + '/productosPantalla.json', json);
     
   });
-  query = 'SELECT * FROM categoriasiproductos';
+  query = 'SELECT * FROM promosPantalla';
 
   // Ejecutar la consulta
   db.query(query, (err, results) => {
@@ -121,7 +121,7 @@ db.connect((err) => {
     const json = JSON.stringify(results);
 
     // Guardar el JSON en un archivo
-    fs.writeFileSync(__dirname + '/categoriasIproductos.json', json);
+    fs.writeFileSync(__dirname + '/promosPantalla.json', json);
   });
   query = 'SELECT * FROM categoriasisabores';
   // Ejecutar la consulta
