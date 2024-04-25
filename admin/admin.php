@@ -1,6 +1,7 @@
 <?php
 include("conexion.php");
 include("funciones/proteger.php");
+
 session_start();
 
 if (!isset($_SESSION["usuario"])) {
@@ -56,12 +57,6 @@ if (!isset($_SESSION["usuario"])) {
             <a class="nav-link" id="agregarProducto">Agregar producto</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" id="agregarProductoPantalla">Agregar/modificar/borrar producto a las pantallas</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="agregarProductoCarta">Agregar/modificar/borrar producto a las cartas</a>
-          </li>
-          <li class="nav-item">
             <a class="nav-link" id="agregarPromosPantalla">Agregar/modificar/borrar promo a las pantallas</a>
           </li>
           <li class="nav-item">
@@ -94,13 +89,16 @@ if (!isset($_SESSION["usuario"])) {
           <li class="nav-item">
             <a class="nav-link" id="modificarPrecios">Modificar todos los precios</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" id="descargarPrecios">Descargar precios</a>
+          </li>
         </ul>
       </div>
     </div>
   </nav>
   <!-- Contenedor que se modifica con js para llenarlo con un formulario -->
   <div id="content" class="container mt-5">
-  
+
   </div>
   <script>
     let cont2 = 0;
@@ -133,10 +131,16 @@ if (!isset($_SESSION["usuario"])) {
   <script>
     let cont = 0;
 
-    function agregarCampo(i = 0) {
-      cont += i;
+    function agregarCampo(i = -1) {
+      if (cont == 0) {
+        if (i == -1)
+          cont = 1;
+        else
+          cont = i;
+      }
+      console.log(cont);
+
       let div = document.createElement('div');
-      cont++;
       div.className = 'form-group';
       div.innerHTML = `
             <div class="form-group">
@@ -157,13 +161,19 @@ if (!isset($_SESSION["usuario"])) {
                     </div>
             `;
       document.getElementById('categoria').appendChild(div);
+      cont++;
+
     }
   </script>
   <!-- Este script es para darle un evento a cada boton del admin y generar los formularios -->
   <script>
     let content = document.getElementById('content');
-
+    let pantalla = false;
+    let carta = false;
     document.getElementById('agregarProducto').addEventListener('click', function() {
+      cont = 0;
+      pantalla = false;
+      carta = false;
       content.innerHTML = `<h2 class="my-4">Formulario de producto</h2>
         <form action="funciones/crearProducto.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
@@ -211,328 +221,123 @@ if (!isset($_SESSION["usuario"])) {
                 <label for="color">Color</label><br>
                 <input type="color" name="color" class="form-control-sm">
             </div><br>
-            <button type="submit" class="btn btn-primary my-3">Guardar</button>
-        </form>`;
-      
-    });
-
-    document.getElementById('agregarProductoPantalla').addEventListener('click', function() {
-      content.innerHTML = `<div class="accordion" id="formularioAcordeon">
-      <div class="card">
-        <div class="card-header" id="headingAgregar">
-          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAgregar" aria-expanded="true" aria-controls="collapseAgregar">
-            Agregar un producto a las pantallas
-          </button>
-        </div>
-
-        <div id="collapseAgregar" class="collapse" aria-labelledby="headingAgregar" data-parent="#formularioAcordeon">
-          <div class="card-body">
-            <h2 class="my-4">Formulario de producto</h2>
-            <form action="funciones/crearProductoPantalla.php" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="agregarproductoPantalla">Agregar producto a las pantallas</label><br>
+                <input type="checkbox" name="agregarProductoPantalla" id="agregarProductoPantalla">
+            </div><br>
+            <div id="formProductoPantalla" style="display:none">
+              <h2 class="my-4">Formulario de producto para pantalla</h2>
               <div class="form-group">
-                <label for="nombreProducto">Nombre</label><br>
-                <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto">
-              </div><br>
-              <div class="form-group">
-                <label for="imagenProducto">Imagen del producto</label><br>
-                <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto">
-              </div><br>
-              <div class="form-group">
+                <label for="imagenProductoPantalla">Imagen del producto en pantalla</label><br>
+                <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
               </div><br>
               <div class="form-group">
                 <label for="productoGeneral">Producto General</label><br>
                 <input name="productoGeneral" type="checkbox" id="productoGeneral">
               </div>
               <br>
-              <div class="form-group" id="precioProducto">
-                <label for="precio">Precio</label><br>
-                <input required name="precio" type="text" class="form-control-sm" id="precio">
-              </div><br>
-              <button type="submit" class="btn btn-primary my-3">Guardar</button>
-            </form>
-
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingModificar">
-          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseModificar" aria-expanded="false" aria-controls="collapseModificar">
-            Modificar/Borrar productos de las pantallas
-          </button>
-        </div>
-
-        <div id="collapseModificar" class="collapse" aria-labelledby="headingModificar" data-parent="#formularioAcordeon">
-          <div class="card-body">
-            <form>
-              <div class="row">
-                <?php
-                $query = "SELECT * FROM productosPantalla";
-                $resultado = mysqli_query($conn, $query);
-                $cards = array();
-                while ($row = $resultado->fetch_assoc()) {
-                  $cards[] = $row;
-                }
-                foreach ($cards as $card) {
-                  echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">
-                        <div class="card" style="width: 18rem;">
-                        <img src="../'. $card["imagen"] . '" class="card-img-top" alt="...">
-                        <div class="card-body">
-                        <h5 class="card-title">' . $card["nombre"] . '</h5>
-                        <h5 class="card-title">$' . $card["precio"] . '</h5>
-                        </div>
-                        </div>
-                        </div>';
-                }
-                ?>
-            </form>
-          </div>
-        </div>
-      </div>
-      </div>`;
-      <?php
-      function formularioProductoPantalla($card)
-      {
-        $resultado = "";
-        $resultado .= '<h2 class="my-4">Formulario de producto</h2>
-        <a href="funciones/eliminarProductoPantalla.php?id=' . $card["id"] . '">
-                <button>Eliminar producto</button>
-              </a>
-        <form action="funciones/modificarProducto.php" method="post" enctype="multipart/form-data">
-        <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $card["id"] . ' ">
-          <div class="form-group">
-            <label for="nombreProducto">Nombre</label><br>
-            <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value ="' . $card["nombre"] . '">
-          </div><br>
-          <div class="form-group">
-            <label for="imagenProducto">Nueva imagen del producto</label><br>
-            <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto">
-          </div><br>
-          <div class="form-group">
-          </div><br>
-          <div class="form-group">
-            <label for="productoGeneral">Producto General</label><br>';
-        if ($card["productoGeneral"] == 0)
-          $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
-        else
-          $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral" checked>';
-        $resultado .= '</div>
-          <br>
-          <div class="form-group" id="precioProducto">
-            <label for="precio">Precio</label><br>
-            <input required name="precio" type="text" class="form-control-sm" id="precio"' . $card["precio"] . '>
-          </div><br>
-          <button type="submit" class="btn btn-primary my-3">Guardar</button>
-        </form>';
-        return $resultado;
-      }
-      foreach ($cards as $card) {
-        echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                            content.innerHTML = `" . formularioProductoPantalla($card) . "`;
-        });";
-      }
-      ?>
-    });
-
-    document.getElementById('agregarProductoCarta').addEventListener('click', function() {
-      content.innerHTML = `<div class="accordion" id="formularioAcordeon">
-      <div class="card">
-        <div class="card-header" id="headingAgregar">
-          <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseAgregar" aria-expanded="true" aria-controls="collapseAgregar">
-            Agregar un producto a las cartas
-          </button>
-        </div>
-
-        <div id="collapseAgregar" class="collapse" aria-labelledby="headingAgregar" data-parent="#formularioAcordeon">
-          <div class="card-body">
-            <h2 class="my-4">Formulario de producto para la carta</h2>
-            <form action="funciones/crearProductoCarta.php" method="post" enctype="multipart/form-data">
-              <div class="form-group">
-                <label for="nombreProducto">Nombre</label><br>
-                <input required name="titulo" type="text" class="form-control-sm" id="nombreProducto">
-              </div><br>
-              <div class="form-group">
-                <label for="descripcion">Descripcion</label><br>
-                <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto"></textarea>
-              </div><br>
-              <div class="form-group">
-                <label for="imagenProducto">Imagen del producto</label><br>
-                <input required name="imagen" type="file" class="form-control-file" id="imagenProducto">
-              </div><br>
-              <div class="form-group">
-                <label for="sucursales">Sucursales en donde hay del producto</label><br>
-                <?php
-                $query = "SELECT * FROM sucursales";
-                $resultado = mysqli_query($conn, $query);
-                $sucursales = array();
-                while ($row = $resultado->fetch_assoc()) {
-                  $sucursales[] = $row;
-                }
-                foreach ($sucursales as $sucursal) {
-                  echo '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
-                }
-                ?>
-              </div><br>
-              <br>
-              <div class="form-group" id="precioProducto">
-                <label for="precio">Precio</label><br>
-                <input required name="precio" type="text" class="form-control-sm" id="precio">
-              </div><br>
-              <div class="form-group">
-                <label for="destacar">Destacar (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>
-                <input name="destacar" type="checkbox" id="destacar">
             </div>
             <div class="form-group">
-                <label for="destacar">Categoria helado</label><br>
-                <input name="helado" type="checkbox" id="destacar">
+                <label for="agregarProductoCarta">Agregar producto a la carta</label><br>
+                <input name="agregarProductoCarta" type="checkbox" id="agregarProductoCarta">
+              </div>
+              <div id="formProductoCarta" style="display:none">
+                <h2 class="my-4">Formulario de producto para la carta</h2>
+                <div class="form-group">
+                  <label for="imagenProductoCarta">Imagen del producto para la carta</label><br>
+                  <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
+                </div><br>
+                <div class="form-group">
+                  <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>
+                  <?php
+                  $query = "SELECT * FROM sucursales";
+                  $resultado = mysqli_query($conn, $query);
+                  $sucursales = array();
+                  while ($row = $resultado->fetch_assoc()) {
+                    $sucursales[] = $row;
+                  }
+                  foreach ($sucursales as $sucursal) {
+                    echo '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+                  }
+                  ?>
+                </div><br>
+                <br>
+                <div class="form-group">
+                  <label for="destacarCarta">Destacar en carta (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>
+                  <input name="destacarCarta" type="checkbox" id="destacarCarta">
+                </div>
+                <div class="form-group">
+                    <label for="helado">Categoria helado</label><br>
+                    <input name="helado" type="checkbox" id="helado">
+                </div>
+                <div class="form-group">
+                    <label for="cafeteria">Categoria cafeteria</label><br>
+                    <input name="cafeteria" type="checkbox" id="cafeteria">
+                </div>
+                <div class="form-group">
+                    <label for="promo">Categoria promo</label><br>
+                    <input name="promo" type="checkbox" id="promo">
+                </div>
             </div>
-            <div class="form-group">
-                <label for="destacar">Categoria cafeteria</label><br>
-                <input name="cafeteria" type="checkbox" id="destacar">
-            </div>
-            <div class="form-group">
-                <label for="destacar">Categoria promo</label><br>
-                <input name="promo" type="checkbox" id="destacar">
-            </div>
-            
-              <button type="submit" class="btn btn-primary my-3">Guardar</button>
-            </form>
-
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" id="headingModificar">
-          <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseModificar" aria-expanded="false" aria-controls="collapseModificar">
-            Modificar/Borrar productos de las cartas
-          </button>
-        </div>
-
-        <div id="collapseModificar" class="collapse" aria-labelledby="headingModificar" data-parent="#formularioAcordeon">
-          <div class="card-body">
-            <form>
-              <div class="row">
-              <?php
-              $query = "SELECT * FROM productoscarta";
-              $resultado = mysqli_query($conn, $query);
-              $cards = array();
-              while ($row = $resultado->fetch_assoc()) {
-                $cards[] = $row;
-              }
-
-              foreach ($cards as $card) {
-                echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
-                echo '<div class="card" style="width: 18rem;">';
-                echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
-                echo '<div class="card-body">';
-                echo '<h5 class="card-title">' . $card["titulo"] . '</h5>';
-                echo '</div>';
-                echo '</div>';
-                echo '</div>';
-              }
-              ?>
-            </form>
-          </div>
-        </div>
-      </div>
-      </div>`;
-      <?php
-      function formularioProductoCarta($card)
-      {
-        include("conexion.php");
-        $resultado = "";
-        $resultado .= '
-        <h2 class="my-4">Formulario de producto para la carta</h2>
-        <a href="funciones/eliminarProductoCarta.php?id=' . $card["id"] . '">
-                <button>Eliminar Producto</button>
-              </a>
-        <form action="funciones/modificarProductoCarta.php" method="post" enctype="multipart/form-data">
-        <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $card["id"] . '">
-          <div class="form-group">
-            <label for="nombreProducto">Nombre</label><br>
-            <input required name="titulo" type="text" class="form-control-sm" id="nombreProducto" value="' . $card["titulo"] . '">
-          </div><br>
-          <div class="form-group">
-            <label for="descripcion">Descripcion</label><br>
-            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto">' . $card["descripcion"] . '</textarea>
-          </div><br>
-          <div class="form-group">
-            <label for="imagenProducto">Nueva imagen del producto</label><br>
-            <input name="imagen" type="file" class="form-control-file" id="imagenProducto">
-          </div><br>
-          <div class="form-group">
-            <label for="sucursales">Sucursales en donde hay del producto</label><br>';
-        $query = "SELECT * FROM sucursales";
-        $result = mysqli_query($conn, $query);
-        $sucursales = array();
-        while ($row = $result->fetch_assoc()) {
-          $sucursales[] = $row;
+            <div class="form-group" id="precioProducto">
+            <label for="codigo">Codigo de producto</label><br>
+            <input name="codigo" type="number" class="form-control-sm" id="codigo"><br>
+                <label for="precio">Precio mostrador</label><br>
+                <input name="precio" type="number" class="form-control-sm" id="precio"><br>
+                <label for="precio">Precio pedidos ya</label><br>
+                <input name="precioPY" type="number" class="form-control-sm" id="precioPY">
+              </div><br>
+            <button type="submit" class="btn btn-primary my-3">Guardar</button>
+        </form>`;
+      document.getElementById('agregarProductoPantalla').addEventListener('change', function() {
+        if (this.checked) {
+          pantalla = true;
+          document.getElementById('formProductoPantalla').style.display = 'block';
+          document.getElementById("imagenProductoPantalla").required = true;
+          document.getElementById("productoGeneral").required = true;
+        } else {
+          pantalla = false;
+          document.getElementById('formProductoPantalla').style.display = 'none';
+          document.getElementById("imagenProductoPantalla").required = false;
+          document.getElementById("productoGeneral").required = false;
         }
-        $query = "SELECT * FROM productosporsucursal WHERE idProductoCarta = {$card["id"]} ";
-        $result = mysqli_query($conn, $query);
-        $productoSucursal = array();
-        while ($row = $result->fetch_assoc()) {
-          $productoSucursal[] = $row;
+        if (pantalla == true || carta == true) {
+          document.getElementById('precioProducto').style.display = 'block';
+          document.getElementById('precio').required = true;
+          document.getElementById('codigo').required = true;
+          document.getElementById('precioPY').required = true;
+        } else {
+          document.getElementById('precioProducto').style.display = 'none';
+          document.getElementById('precio').required = false;
+          document.getElementById('codigo').required = false;
+          document.getElementById('precioPY').required = false;
         }
-        foreach ($sucursales as $sucursal) {
-          $aux = false;
-          foreach ($productoSucursal as $producto) {
-            if ($producto["idSucursal"] == $sucursal["id"]) {
-              $aux = true;
-            }
-          }
-          if ($aux)
-            $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal" checked> <p> ' . $sucursal["sucursal"] . '</p>';
-          else
-            $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
-        }
-        $resultado .= '</div><br>
-          <br>
-          <div class="form-group" id="precioProducto">
-            <label for="precio">Precio</label><br>
-            <input required name="precio" type="text" class="form-control-sm" id="precio" value="' . $card["precio"] . '">
-          </div><br>
-          <div class="form-group">
-        <label for="destacar">Destacar (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>';
-        if ($card["destacado"] == 1)
-          $resultado .= '<input name="destacar" type="checkbox" id="destacar" checked>';
-        else
-          $resultado .= '<input name="destacar" type="checkbox" id="destacar">';
-        $resultado .= '</div>
-        <div class="form-group">
-        <label for="helado">Categoria helado</label><br>';
-        if ($card["helados"] == 1)
-          $resultado .= '<input name="helado" type="checkbox" id="helado" checked>';
-        else
-          $resultado .= '<input name="helado" type="checkbox" id="helado">';
-        $resultado .= '</div>
-        <div class="form-group">
-        <label for="cafeteria">Categoria cafeteria</label><br>';
-        if ($card["cafeteria"] == 1)
-          $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria" checked>';
-        else
-          $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria">';
-        $resultado .= '</div>
-        <div class="form-group">
-        <label for="promo">Categoria promo</label><br>';
-        if ($card["promos"] == 1)
-          $resultado .= '<input name="promo" type="checkbox" id="promo" checked>';
-        else
-          $resultado .= '<input name="promo" type="checkbox" id="promo">';
-        $resultado .= '</div>
 
-        
-          <button type="submit" class="btn btn-primary my-3">Guardar</button>
-        </form>';
-        return $resultado;
-      }
-      foreach ($cards as $card) {
-        echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                            content.innerHTML = `" . formularioProductoCarta($card) . "`;
-        });";
-      }
-      ?>
+      });
+      document.getElementById('agregarProductoCarta').addEventListener('click', function() {
+        if (this.checked) {
+          carta = true;
+          document.getElementById('formProductoCarta').style.display = 'block';
+          document.getElementById("imagenProductoCarta").required = true;
+        } else {
+          carta = false;
+          document.getElementById('formProductoCarta').style.display = 'none';
+          document.getElementById("imagenProductoCarta").required = false;
+        }
+        if (pantalla == true || carta == true) {
+          document.getElementById('precioProducto').style.display = 'block';
+          document.getElementById('precio').required = true;
+          document.getElementById('codigo').required = true;
+          document.getElementById('precioPY').required = true;
+        } else {
+          document.getElementById('precioProducto').style.display = 'none';
+          document.getElementById('precio').required = false;
+          document.getElementById('codigo').required = false;
+          document.getElementById('precioPY').required = false;
+        }
+
+
+      });
     });
 
     document.getElementById('agregarPromosPantalla').addEventListener('click', function() {
@@ -631,122 +436,122 @@ if (!isset($_SESSION["usuario"])) {
 
     document.getElementById('agregarSabor').addEventListener('click', function() {
       content.innerHTML = `<h2 class="my-4">Formulario de sabores</h2>
-        <form action="funciones/crearSabor.php" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="nombreSabor">Nombre</label><br>
-                <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" >
-            </div><br>
-            <div class="form-group">
-            <label for="imagenSabor">Imagen del sabor</label><br>
-                <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
-            </div><br>
-            <div class="form-group">
-                <label for="descripcion">Descripcion</label><br>
-                <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
-            </div><br>
-                <div class="form-group">
-                <label for="categoriaSelect">Categoria</label><br>
-                <select required name="categoriaSelect" class="form-control-sm" id="categoriaSelect" placeholder = "Selecciona una categoria">
-                    <option value=""  selected>Selecciona una categoria</option>
-                    <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
+      <form action="funciones/crearSabor.php" method="post" enctype="multipart/form-data">
+          <div class="form-group">
+              <label for="nombreSabor">Nombre</label><br>
+              <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" >
+          </div><br>
+          <div class="form-group">
+          <label for="imagenSabor">Imagen del sabor</label><br>
+              <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
+          </div><br>
+          <div class="form-group">
+              <label for="descripcion">Descripcion</label><br>
+              <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
+          </div><br>
+              <div class="form-group">
+              <label for="categoriaSelect">Categoria</label><br>
+              <select required name="categoriaSelect" class="form-control-sm" id="categoriaSelect" placeholder = "Selecciona una categoria">
+                  <option value=""  selected>Selecciona una categoria</option>
+                  <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
 
-                    <?php
-                    $query = "SELECT * FROM categorias_sabores";
-                    $resultado = mysqli_query($conn, $query);
-                    $categorias = array();
-                    while ($row = $resultado->fetch_assoc()) {
-                      $categorias[] = $row;
-                    }
-                    foreach ($categorias as $categoria)
-                      echo '<option value="' . $categoria["id"] . '">' . $categoria["nombre"] . '</option>';
-                    ?>
-                </select>
-            </div><br>
-            <div class="form-group">
-                <label for="color">Color</label><br>
-                <input type="color" name="color" class="form-control-sm">
-            </div><br>
-            <div class="form-group">
-                <label for="destacar">Destacar sabor</label><br>
-                <input name="destacar" type="checkbox" id="destacar">
-            </div>
-            <br>
-                
-            <button type="submit" class="btn btn-primary my-3">Guardar</button>
+                  <?php
+                  $query = "SELECT * FROM categorias_sabores";
+                  $resultado = mysqli_query($conn, $query);
+                  $categorias = array();
+                  while ($row = $resultado->fetch_assoc()) {
+                    $categorias[] = $row;
+                  }
+                  foreach ($categorias as $categoria)
+                    echo '<option value="' . $categoria["id"] . '">' . $categoria["nombre"] . '</option>';
+                  ?>
+              </select>
+          </div><br>
+          <div class="form-group">
+              <label for="color">Color</label><br>
+              <input type="color" name="color" class="form-control-sm">
+          </div><br>
+          <div class="form-group">
+              <label for="destacar">Destacar sabor</label><br>
+              <input name="destacar" type="checkbox" id="destacar">
+          </div>
+          <br>
+              
+          <button type="submit" class="btn btn-primary my-3">Guardar</button>
 
-        </form>`;
+      </form>`;
     });
 
     document.getElementById('agregarSucursales').addEventListener('click', function() {
       content.innerHTML = `<h2>Formulario de Sucursal</h2>
-        <form action="funciones/crearSucursal.php" method="post" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="nombre">Nombre</label><br>
-            <input type="text" class="form-control-sm" id="nombre" placeholder="Nombre de la sucursal" name="nombre">
-          </div><br>
-          <div class="form-group">
-            <label for="descripcion">Descripcion</label><br>
-            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal"></textarea>
-          </div><br>
-          <div class="form-group">
-            <label for="link">Link de pedidos ya</label><br>
-            <input type="text" class="form-control" id="link" name="link">
-          </div><br>
-          <div class="form-group">
-            <label for="direccion">Mapa</label><br>
-            <input type="text" class="form-control" id="Mapa" placeholder="Mapa" name="maps">
-          </div><br>
-          <div class="form-group">
-            <label for="zonaSelect">Zona</label><br>
-            <select required name="zonaSelect" class="form-control-sm" id="zonaSelect">
-              <option value="" disabled selected>Selecciona una zona</option>
-              <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
-              <?php
-              $query = "SELECT * FROM zonas";
-              $resultado = mysqli_query($conn, $query);
-              $zonas = array();
-              while ($row = $resultado->fetch_assoc()) {
-                $zonas[] = $row;
-              }
-              foreach ($zonas as $zona)
-                echo '<option value="' . $zona["id"] . '">' . $zona["zona"] . '</option>';
-              ?>
-            </select>
-          </div><br>
-          <div class="form-group">
-            <label for="nuevaZona">Nueva zona(si se escribe algo en este campo se la seleccion anterior no importara)</label><br>
-            <input type="text" class="form-control" id="nuevaZona" placeholder="Zona en la que esta ubicada" name="nuevaZona">
-          </div>
-          <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>`;
+      <form action="funciones/crearSucursal.php" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="nombre">Nombre</label><br>
+          <input type="text" class="form-control-sm" id="nombre" placeholder="Nombre de la sucursal" name="nombre">
+        </div><br>
+        <div class="form-group">
+          <label for="descripcion">Descripcion</label><br>
+          <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal"></textarea>
+        </div><br>
+        <div class="form-group">
+          <label for="link">Link de pedidos ya</label><br>
+          <input type="text" class="form-control" id="link" name="link">
+        </div><br>
+        <div class="form-group">
+          <label for="direccion">Mapa</label><br>
+          <input type="text" class="form-control" id="Mapa" placeholder="Mapa" name="maps">
+        </div><br>
+        <div class="form-group">
+          <label for="zonaSelect">Zona</label><br>
+          <select required name="zonaSelect" class="form-control-sm" id="zonaSelect">
+            <option value="" disabled selected>Selecciona una zona</option>
+            <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
+            <?php
+            $query = "SELECT * FROM zonas";
+            $resultado = mysqli_query($conn, $query);
+            $zonas = array();
+            while ($row = $resultado->fetch_assoc()) {
+              $zonas[] = $row;
+            }
+            foreach ($zonas as $zona)
+              echo '<option value="' . $zona["id"] . '">' . $zona["zona"] . '</option>';
+            ?>
+          </select>
+        </div><br>
+        <div class="form-group">
+          <label for="nuevaZona">Nueva zona(si se escribe algo en este campo se la seleccion anterior no importara)</label><br>
+          <input type="text" class="form-control" id="nuevaZona" placeholder="Zona en la que esta ubicada" name="nuevaZona">
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>`;
     });
 
     document.getElementById('agregarPromociones').addEventListener('click', function() {
       content.innerHTML = `<h2 class="my-4">Formulario de promociones</h2>
-        <form action="funciones/crearPromo.php" method="post" enctype="multipart/form-data">
-          <div class="form-group">
-            <label for="nombre">Nombre</label><br>
-            <input required name="nombre" type="text" class="form-control-sm" id="nombre">
-          </div><br>
-          <div class="form-group">
-            <label for="imagen">Imagen de la promo</label><br>
-            <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
-          </div><br>
-          <div class="form-group">
-            <label for="descripcion">Descripcion</label><br>
-            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)"></textarea>
-          </div><br>
-          <div class="form-group">
-            <label for="fondo">Fondo</label><br>
-            <input name="fondo" type="checkbox" id="fondo">
-          </div>
-          <br>
-          <div class="form-group" style="display: none;" id="co">
-            <label for="color">Color</label><br>
-            <input type="color" name="color" class="form-control-sm">
-          </div><br>
-            <button type="submit" class="btn btn-primary my-3">Guardar</button>
-        </form>`;
+      <form action="funciones/crearPromo.php" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="nombre">Nombre</label><br>
+          <input required name="nombre" type="text" class="form-control-sm" id="nombre">
+        </div><br>
+        <div class="form-group">
+          <label for="imagen">Imagen de la promo</label><br>
+          <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
+        </div><br>
+        <div class="form-group">
+          <label for="descripcion">Descripcion</label><br>
+          <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)"></textarea>
+        </div><br>
+        <div class="form-group">
+          <label for="fondo">Fondo</label><br>
+          <input name="fondo" type="checkbox" id="fondo">
+        </div>
+        <br>
+        <div class="form-group" style="display: none;" id="co">
+          <label for="color">Color</label><br>
+          <input type="color" name="color" class="form-control-sm">
+        </div><br>
+          <button type="submit" class="btn btn-primary my-3">Guardar</button>
+      </form>`;
       document.getElementById('fondo').addEventListener('change', function() {
         if (this.checked) {
           document.getElementById('co').style.display = 'block';
@@ -842,50 +647,53 @@ if (!isset($_SESSION["usuario"])) {
     });
 
     document.getElementById('modificarBorrarProducto').addEventListener('click', function() {
+      cont = 0;
+      pantalla = false;
+      carta = false;
       content.innerHTML = `<h2 class="my-4">Click en el producto a modificar</h2>
-        <div class="row">
-          <?php
-          $query = "SELECT * FROM productos";
-          $resultado = mysqli_query($conn, $query);
-          $cards = array();
-          while ($row = $resultado->fetch_assoc()) {
-            $cards[] = $row;
-          }
+      <div class="row">
+        <?php
+        $query = "SELECT * FROM productos";
+        $resultado = mysqli_query($conn, $query);
+        $cards = array();
+        while ($row = $resultado->fetch_assoc()) {
+          $cards[] = $row;
+        }
 
-          foreach ($cards as $card) {
-            echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
-            echo '<div class="card" style="width: 18rem;">';
-            echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
-            echo '<div class="card-body">';
-            echo '<h5 class="card-title">' . $card["nombre"] . '</h5>';
-            echo '<p class="card-text">' . $card["descripcion"] . '</p>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-          }
+        foreach ($cards as $card) {
+          echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
+          echo '<div class="card" style="width: 18rem;">';
+          echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
+          echo '<div class="card-body">';
+          echo '<h5 class="card-title">' . $card["nombre"] . '</h5>';
+          echo '<p class="card-text">' . $card["descripcion"] . '</p>';
+          echo '</div>';
+          echo '</div>';
+          echo '</div>';
+        }
 
-          ?>`;
+        ?>`;
       <?php
       function formulario($cards)
       {
         include("conexion.php");
         $resultado = "";
         $resultado .= '<h2 class="my-4">Formulario de producto</h2>
-              <a href="funciones/eliminarProducto.php?id=' . $cards["id"] . '">
-                <button>Eliminar producto</button>
-              </a>
-              <form action="funciones/modificarProducto.php" method="post" enctype="multipart/form-data">
-                  <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $cards["id"] . ' ">
-                  <div class="form-group">
-                      <label for="nombreProducto">Nombre</label><br>
-                      <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value="' . $cards["nombre"] . '">
-                  </div><br>
-                  <div class="form-group">
-                      <label for="imagenProducto">Reeplazar imagen del producto</label><br>
-                      <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
-                  </div><br>
-                  <div class="form-group" id="categorias">
-                  <label>Categorias</label><br>';
+            <a href="funciones/eliminarProducto.php?id=' . $cards["id"] . '">
+              <button>Eliminar producto</button>
+            </a>
+            <form action="funciones/modificarProducto.php" method="post" enctype="multipart/form-data">
+                <input required name="id" type="hidden" class="form-control-sm" id="idProducto" value="' . $cards["id"] . ' ">
+                <div class="form-group">
+                    <label for="nombreProducto">Nombre</label><br>
+                    <input required name="nombreProducto" type="text" class="form-control-sm" id="nombreProducto" value="' . $cards["nombre"] . '">
+                </div><br>
+                <div class="form-group">
+                    <label for="imagenProducto">Reeplazar imagen del producto</label><br>
+                    <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
+                </div><br>
+                <div class="form-group" id="categoria">
+                <label>Categorias</label><br>';
         $con = "SELECT * FROM categorias_productos";
         // Ejecución de la consulta
         $sql = mysqli_query($conn, $con);
@@ -902,6 +710,7 @@ if (!isset($_SESSION["usuario"])) {
         }
         $i = 0;
         foreach ($numCategorias as $numCategoria) {
+
           $resultado .= '<div class="form-group"> ';
           foreach ($categorias as $categoria) {
             if ($categoria["id"] == $numCategoria["idCategoria"])
@@ -911,87 +720,316 @@ if (!isset($_SESSION["usuario"])) {
             $resultado .= '<label for="' . $categoria['id'] . '">' . $categoria['nombre'] . '</label><br>';
           }
           $resultado .= '<label for="eliminar' . $i . '">Eliminar</label><br>
-                  <input name="eliminar' . $i . '" type="checkbox" id="eliminar">
-                  </div>';
+                <input name="eliminar' . $i . '" type="checkbox" id="eliminar">
+                </div>';
           $i .= 1;
         }
         $resultado .= '</div>
-                      <button type="button" onclick="agregarCampo(' . $i . ')">Agregar más categorias</button>
-                      <div class="form-group">
-                      </div><br>
-                      <div class="form-group">
-                      <label for="descripcion">Descripcion</label><br>
-                      <textarea required name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
-                  </div><br>
-                  <div class="form-group">
-                      <label for="destacar">Destacar producto</label><br>';
+                    <button type="button" onclick="agregarCampo(' . $i . ')">Agregar más categorias</button>
+                    <div class="form-group">
+                    </div><br>
+                    <div class="form-group">
+                    <label for="descripcion">Descripcion</label><br>
+                    <textarea required name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
+                </div><br>
+                <div class="form-group">
+                    <label for="destacar">Destacar producto</label><br>';
         if ($cards['destacado'] == 1)
           $resultado .= '<input name="destacar" type="checkbox" id="destacar" checked>';
         else
           $resultado .= '<input name="destacar" type="checkbox" id="destacar">';
         $resultado .= '</div>
-                  <br>
-                  <div class="form-group">
-                      <label for="color">Color</label><br>
-                      <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
-                  </div><br>
-                  <button type="submit" class="btn btn-primary my-3">Guardar</button>
+                <br>
+                <div class="form-group">
+                    <label for="color">Color</label><br>
+                    <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
+                </div><br>
+                <div class="form-group">
+              <label for="agregarproductoPantalla">Agregar producto a las pantallas</label><br>';
+        $con = "SELECT * FROM productospantalla where idProducto = {$cards["id"]}";
+        // Ejecución de la consulta
+        $sql = mysqli_query($conn, $con);
+        while ($row = $sql->fetch_assoc()) {
+          $productoPantalla = $row;
+        }
+        if (isset($productoPantalla)) {
+          $resultado .= '<input type="checkbox" name="agregarProductoPantalla" checked>  
+          </div><br>';
+          $resultado .= '
+        <div id="agregarProductoPantalla">
+        <h2 class="my-4">Formulario de producto para pantallas</h2>
+          <div class="form-group">
+            <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
+            <input required name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
+          </div><br>
+          <div class="form-group">
+            <label for="productoGeneral">Producto General</label><br>';
+          if ($productoPantalla["productoGeneral"] == 0)
+            $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
+          else
+            $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral" checked>';
+          $resultado .= '</div><br></div>
+        ';
+        } else {
+          $resultado .= '<input type="checkbox" name="agregarProductoPantalla">  
+            </div><br>';
+          $resultado .= '
+        <div id="agregarProductoPantalla" style="display:none">
+        <h2 class="my-4">Formulario de producto para pantallas</h2>
+          <div class="form-group">
+            <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
+            <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
+          </div><br>
+          <div class="form-group">
+            <label for="productoGeneral">Producto General</label><br>';
+          $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
+
+          $resultado .= '</div><br></div>
+        ';
+        }
+
+        $con = "SELECT * FROM productoscarta where idProducto = {$cards["id"]}";
+        // Ejecución de la consulta
+        $sql = mysqli_query($conn, $con);
+        while ($row = $sql->fetch_assoc()) {
+          $productoCarta = $row;
+        }
+        if (isset($productoCarta)) {
+          $resultado .= '
+          <div class="form-group">
+                <label for="agregarProductoCarta">Agregar producto a la carta</label><br>
+                <input name="agregarProductoCarta" type="checkbox" id="agregarProductoCarta" checked>
+              </div>
+          <div id="formProductoCarta">
+          <h2 class="my-4">Formulario de producto para la carta</h2>
+            <div class="form-group">
+              <label for="imagenProductoCarta">Nueva imagen del producto</label><br>
+              <input name="imagenProductoCarta" type="file" class="form-control-file" id="imagenProductoCarta">
+            </div><br>
+            <div class="form-group">
+              <label for="sucursales">Sucursales en donde hay del producto</label><br>';
+          $query = "SELECT * FROM sucursales";
+          $result = mysqli_query($conn, $query);
+          $sucursales = array();
+          while ($row = $result->fetch_assoc()) {
+            $sucursales[] = $row;
+          }
+          $query = "SELECT * FROM productosporsucursal WHERE idProductoCarta = {$productoCarta["id"]} ";
+          $result = mysqli_query($conn, $query);
+          $productoSucursal = array();
+          while ($row = $result->fetch_assoc()) {
+            $productoSucursal[] = $row;
+          }
+          foreach ($sucursales as $sucursal) {
+            $aux = false;
+            foreach ($productoSucursal as $producto) {
+              if ($producto["idSucursal"] == $sucursal["id"]) {
+                $aux = true;
+              }
+            }
+            if ($aux)
+              $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal" checked> <p> ' . $sucursal["sucursal"] . '</p>';
+            else
+              $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+          }
+          $resultado .= '</div><br>
+            <div class="form-group">
+          <label for="destacar">Destacar en carta (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>';
+          if ($productoCarta["destacado"] == 1)
+            $resultado .= '<input name="destacarCarta" type="checkbox" id="destacarCarta" checked>';
+          else
+            $resultado .= '<input name="destacarCarta" type="checkbox" id="destacar">';
+          $resultado .= '</div>
+          <div class="form-group">
+          <label for="helado">Categoria helado</label><br>';
+          if ($productoCarta["helados"] == 1)
+            $resultado .= '<input name="helado" type="checkbox" id="helado" checked>';
+          else
+            $resultado .= '<input name="helado" type="checkbox" id="helado">';
+          $resultado .= '</div>
+          <div class="form-group">
+          <label for="cafeteria">Categoria cafeteria</label><br>';
+          if ($productoCarta["cafeteria"] == 1)
+            $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria" checked>';
+          else
+            $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria">';
+          $resultado .= '</div>
+          <div class="form-group">
+          <label for="promo">Categoria promo</label><br>';
+          if ($productoCarta["promos"] == 1)
+            $resultado .= '<input name="promo" type="checkbox" id="promo" checked>';
+          else
+            $resultado .= '<input name="promo" type="checkbox" id="promo">';
+          $resultado .= '</div>
+          </div>';
+        } else {
+          $resultado .= '
+          <div class="form-group">
+                <label for="agregarProductoCarta">Agregar producto a la carta</label><br>
+                <input name="agregarProductoCarta" type="checkbox" id="agregarProductoCarta">
+              </div>
+              <div id="formProductoCarta" style="display:none">
+                <h2 class="my-4">Formulario de producto para la carta</h2>
+                <div class="form-group">
+                  <label for="imagenProductoCarta">Imagen del producto para la carta</label><br>
+                  <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
+                </div><br>
+                <div class="form-group">
+                  <label for="sucursales">Sucursales en donde hay del producto</label><br>';
+
+          $query = "SELECT * FROM sucursales";
+          $sql = mysqli_query($conn, $query);
+          $sucursales = array();
+          while ($row = $sql->fetch_assoc()) {
+            $sucursales[] = $row;
+          }
+          foreach ($sucursales as $sucursal) {
+            $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+          }
+
+          $resultado .= '</div><br>
+                <br>
+                <div class="form-group">
+                  <label for="destacarCarta">Destacar en carta (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>
+                  <input name="destacarCarta" type="checkbox" id="destacarCarta">
+                </div>
+                <div class="form-group">
+                    <label for="helado">Categoria helado</label><br>
+                    <input name="helado" type="checkbox" id="helado">
+                </div>
+                <div class="form-group">
+                    <label for="cafeteria">Categoria cafeteria</label><br>
+                    <input name="cafeteria" type="checkbox" id="cafeteria">
+                </div>
+                <div class="form-group">
+                    <label for="promo">Categoria promo</label><br>
+                    <input name="promo" type="checkbox" id="promo">
+                </div>
+            </div>';
+        }
+        if (isset($productoCarta) && $productoPantalla) {
+          $resultado .= '<div class="form-group" id="precioProducto">
+            <label for="codigo">Codigo de producto</label><br>
+            <input required name="codigo" type="number" class="form-control-sm" id="codigo" value="' . $cards["codigo"] . '"><br>
+            <label for="precio">Precio mostrador</label><br>
+            <input required name="precio" type="number" class="form-control-sm" id="precio" value="' . $cards["precio"] . '"><br>
+            <label for="precio">Precio pedidos ya</label><br>
+            <input required name="precioPY" type="number" class="form-control-sm" id="precioPY" value="' . $cards["precioPY"] . '">
+          </div><br>';
+        } else {
+          $resultado .= '<div class="form-group" id="precioProducto" style="display:none">
+        <label for="codigo">Codigo de producto</label><br>
+        <input  name="codigo" type="number" class="form-control-sm" id="codigo"><br>
+            <label for="precio">Precio mostrador</label><br>
+            <input  name="precio" type="number" class="form-control-sm" id="precio"><br>
+            <label for="precio">Precio pedidos ya</label><br>
+            <input  name="precioPY" type="number" class="form-control-sm" id="precioPY">
+          </div><br>';
+        }
+        $resultado .= '
+        <button type="submit" class="btn btn-primary my-3">Guardar</button>
               </form>';
         return $resultado;
       }
       foreach ($cards as $card) {
         echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                content.innerHTML = `" . formulario($card) . "`
-            });";
+              content.innerHTML = `" . formulario($card) . "`;
+              document.getElementById('agregarProductoPantalla').addEventListener('change', function() {
+                if (this.checked) {
+                  pantalla = true;
+                  document.getElementById('formProductoPantalla').style.display = 'block';
+                  document.getElementById('imagenProductoPantalla').required = true;
+                  document.getElementById('productoGeneral').required = true;
+                } else {
+                  pantalla = false;
+                  document.getElementById('formProductoPantalla').style.display = 'none';
+                  document.getElementById('imagenProductoPantalla').required = false;
+                  document.getElementById('productoGeneral').required = false;
+                }
+                if (pantalla == true || carta == true) {
+                  document.getElementById('precioProducto').style.display = 'block';
+                  document.getElementById('precio').required = true;
+                  document.getElementById('codigo').required = true;
+                  document.getElementById('precioPY').required = true;
+                } else {
+                  document.getElementById('precioProducto').style.display = 'none';
+                  document.getElementById('precio').required = false;
+                  document.getElementById('codigo').required = false;
+                  document.getElementById('precioPY').required = false;
+                }
+              });
+              document.getElementById('agregarProductoCarta').addEventListener('click', function() {
+                if (this.checked) {
+                  carta = true;
+                  document.getElementById('formProductoCarta').style.display = 'block';
+                  document.getElementById('imagenProductoCarta').required = true;
+                } else {
+                  carta = false;
+                  document.getElementById('formProductoCarta').style.display = 'none';
+                  document.getElementById('imagenProductoCarta').required = false;
+                }
+                if (pantalla == true || carta == true) {
+                  document.getElementById('precioProducto').style.display = 'block';
+                  document.getElementById('precio').required = true;
+                  document.getElementById('codigo').required = true;
+                  document.getElementById('precioPY').required = true;
+                } else {
+                  document.getElementById('precioProducto').style.display = 'none';
+                  document.getElementById('precio').required = false;
+                  document.getElementById('codigo').required = false;
+                  document.getElementById('precioPY').required = false;
+                }
+              });
+          });";
       }
       ?>
     });
 
     document.getElementById('modificarBorrarSabor').addEventListener('click', function() {
       content.innerHTML = `<h2 class="my-4">Click en el sabor a modificar</h2>
-        <div class="row">
-          <?php
-          $query = "SELECT * FROM sabores";
-          $resultado = mysqli_query($conn, $query);
-          $cards = array();
-          while ($row = $resultado->fetch_assoc()) {
-            $cards[] = $row;
-          }
+      <div class="row">
+        <?php
+        $query = "SELECT * FROM sabores";
+        $resultado = mysqli_query($conn, $query);
+        $cards = array();
+        while ($row = $resultado->fetch_assoc()) {
+          $cards[] = $row;
+        }
 
-          foreach ($cards as $card) {
-            echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
-            echo '<div class="card" style="width: 18rem;">';
-            echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
-            echo '<div class="card-body">';
-            echo '<h5 class="card-title">' . $card["nombre"] . '</h5>';
-            echo '<p class="card-text">' . $card["descripcion"] . '</p>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-          }
+        foreach ($cards as $card) {
+          echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
+          echo '<div class="card" style="width: 18rem;">';
+          echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
+          echo '<div class="card-body">';
+          echo '<h5 class="card-title">' . $card["nombre"] . '</h5>';
+          echo '<p class="card-text">' . $card["descripcion"] . '</p>';
+          echo '</div>';
+          echo '</div>';
+          echo '</div>';
+        }
 
-          ?>`;
+        ?>`;
       <?php
       function formularioSabor($cards)
       {
         include("conexion.php");
         $resultado = "";
         $resultado .= '<h2 class="my-4">Formulario de Sabor</h2>
-              <a href="funciones/eliminarSabor.php?id=' . $cards["id"] . '">
-                <button>Eliminar Sabor</button>
-              </a>
-              <form action="funciones/modificarSabor.php" method="post" enctype="multipart/form-data">
-                  <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
-                  <div class="form-group">
-                      <label for="nombreSabor">Nombre</label><br>
-                      <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
-                  </div><br>
-                  <div class="form-group">
-                      <label for="imagenSabor">Reeplazar imagen del sabor</label><br>
-                      <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
-                  </div><br>
-                  <div class="form-group" id="categoria">
-                  <label>Categorias</label><br>';
+            <a href="funciones/eliminarSabor.php?id=' . $cards["id"] . '">
+              <button>Eliminar Sabor</button>
+            </a>
+            <form action="funciones/modificarSabor.php" method="post" enctype="multipart/form-data">
+                <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
+                <div class="form-group">
+                    <label for="nombreSabor">Nombre</label><br>
+                    <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
+                </div><br>
+                <div class="form-group">
+                    <label for="imagenSabor">Reeplazar imagen del sabor</label><br>
+                    <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
+                </div><br>
+                <div class="form-group" id="categoria">
+                <label>Categorias</label><br>';
         $con = "SELECT * FROM categorias_sabores";
         // Ejecución de la consulta
         $sql = mysqli_query($conn, $con);
@@ -1017,65 +1055,65 @@ if (!isset($_SESSION["usuario"])) {
             $resultado .= '<label for="' . $categoria['id'] . '">' . $categoria['nombre'] . '</label><br>';
           }
           $resultado .= '<label for="eliminar' . $i . '">Eliminar</label><br>
-                  <input name="eliminar' . $i . '" type="checkbox" id="eliminar">
-                  </div>';
+                <input name="eliminar' . $i . '" type="checkbox" id="eliminar">
+                </div>';
           $i .= 1;
         }
         $resultado .= '</div>
-                      <button type="button" onclick="agregarCampoSabor(' . $i . ')">Agregar más categorias</button>
-                      <div class="form-group">
-                      </div><br>
-                      <div class="form-group">
-                      <label for="descripcion">Descripcion</label><br>
-                      <textarea required name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
-                  </div><br>
-                  <div class="form-group">
-                      <label for="destacar">Destacar sabor</label><br>';
+                    <button type="button" onclick="agregarCampoSabor(' . $i . ')">Agregar más categorias</button>
+                    <div class="form-group">
+                    </div><br>
+                    <div class="form-group">
+                    <label for="descripcion">Descripcion</label><br>
+                    <textarea required name="descripcion" rows="3" class="form-control" id="descripcion">' . $cards["descripcion"] . ' </textarea>
+                </div><br>
+                <div class="form-group">
+                    <label for="destacar">Destacar sabor</label><br>';
         if ($cards['destacado'] == 1)
           $resultado .= '<input name="destacar" type="checkbox" id="destacar" checked>';
         else
           $resultado .= '<input name="destacar" type="checkbox" id="destacar">';
         $resultado .= '</div>
-                  <br>
-                  <div class="form-group">
-                      <label for="color">Color</label><br>
-                      <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
-                  </div><br><br>
-                  <button type="submit" class="btn btn-primary my-3">Guardar</button>
-              </form>';
+                <br>
+                <div class="form-group">
+                    <label for="color">Color</label><br>
+                    <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
+                </div><br><br>
+                <button type="submit" class="btn btn-primary my-3">Guardar</button>
+            </form>';
         return $resultado;
       }
       foreach ($cards as $card) {
         echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                content.innerHTML = `" . formularioSabor($card) . "`
-            });";
+              content.innerHTML = `" . formularioSabor($card) . "`
+          });";
       }
       ?>
     });
 
     document.getElementById('modificarBorrarSucursal').addEventListener('click', function() {
       content.innerHTML = `<h2 class="my-4">Click en la sucursal a modificar</h2>
-        <div class="row">
-          <?php
-          $query = "SELECT * FROM sucursales";
-          $resultado = mysqli_query($conn, $query);
-          $cards = array();
-          while ($row = $resultado->fetch_assoc()) {
-            $cards[] = $row;
-          }
-          foreach ($cards as $card) {
-            echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
-            echo '<div class="card" style="width: 18rem;">';
-            echo '<iframe src="' . $card["maps"] . '" width="300" height="300" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="border: 0px;"></iframe>';
-            echo '<div class="card-body">';
-            echo '<h5 class="card-title">' . $card["sucursal"] . '</h5>';
-            echo '<p class="card-text">' . $card["descripcion"] . '</p>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-          }
+      <div class="row">
+        <?php
+        $query = "SELECT * FROM sucursales";
+        $resultado = mysqli_query($conn, $query);
+        $cards = array();
+        while ($row = $resultado->fetch_assoc()) {
+          $cards[] = $row;
+        }
+        foreach ($cards as $card) {
+          echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
+          echo '<div class="card" style="width: 18rem;">';
+          echo '<iframe src="' . $card["maps"] . '" width="300" height="300" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="border: 0px;"></iframe>';
+          echo '<div class="card-body">';
+          echo '<h5 class="card-title">' . $card["sucursal"] . '</h5>';
+          echo '<p class="card-text">' . $card["descripcion"] . '</p>';
+          echo '</div>';
+          echo '</div>';
+          echo '</div>';
+        }
 
-          ?>`;
+        ?>`;
       <?php
       function formularioSucursal($cards)
       {
@@ -1083,31 +1121,31 @@ if (!isset($_SESSION["usuario"])) {
         $resultado = "";
 
         $resultado .= '
-        <h2>Formulario de Sucursal</h2>
-        <a href="funciones/eliminarSucursal.php?id=' . $cards["id"] . '">
-                <button>Eliminar Sucursal</button>
-              </a>
-        <form action="funciones/modificarSucursal.php" method="post" enctype="multipart/form-data">
-        <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
-          <div class="form-group">
-            <label for="nombre">Nombre</label><br>
-            <input type="text" class="form-control-sm" id="nombre" placeholder="Nombre de la sucursal" name="nombre" value ="' . $cards["sucursal"] . '">
-          </div><br>
-          <div class="form-group">
-            <label for="descripcion">Descripcion</label><br>
-            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal" >' . $cards["descripcion"] . '</textarea>
-          </div><br>
-          <div class="form-group">
-            <label for="link">Link de pedidos ya</label><br>
-            <input type="text" class="form-control" id="link" name="link" value ="' . $cards["link"] . '">
-          </div><br>
-          <div class="form-group">
-            <label for="direccion">Mapa</label><br>
-            <input type="text" class="form-control" id="Mapa" placeholder="Mapa" name="maps"value ="' . $cards["maps"] . '">
-          </div><br>
-          <div class="form-group">
-            <label for="zonaSelect">Zona</label><br>
-            <select required name="zonaSelect" class="form-control-sm" id="zonaSelect">';
+      <h2>Formulario de Sucursal</h2>
+      <a href="funciones/eliminarSucursal.php?id=' . $cards["id"] . '">
+              <button>Eliminar Sucursal</button>
+            </a>
+      <form action="funciones/modificarSucursal.php" method="post" enctype="multipart/form-data">
+      <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
+        <div class="form-group">
+          <label for="nombre">Nombre</label><br>
+          <input type="text" class="form-control-sm" id="nombre" placeholder="Nombre de la sucursal" name="nombre" value ="' . $cards["sucursal"] . '">
+        </div><br>
+        <div class="form-group">
+          <label for="descripcion">Descripcion</label><br>
+          <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la sucursal" >' . $cards["descripcion"] . '</textarea>
+        </div><br>
+        <div class="form-group">
+          <label for="link">Link de pedidos ya</label><br>
+          <input type="text" class="form-control" id="link" name="link" value ="' . $cards["link"] . '">
+        </div><br>
+        <div class="form-group">
+          <label for="direccion">Mapa</label><br>
+          <input type="text" class="form-control" id="Mapa" placeholder="Mapa" name="maps"value ="' . $cards["maps"] . '">
+        </div><br>
+        <div class="form-group">
+          <label for="zonaSelect">Zona</label><br>
+          <select required name="zonaSelect" class="form-control-sm" id="zonaSelect">';
         $query = "SELECT * FROM zonas";
         $sql = mysqli_query($conn, $query);
         $zonas = array();
@@ -1121,107 +1159,107 @@ if (!isset($_SESSION["usuario"])) {
             $resultado .= '<option value="' . $zona["id"] . '">' . $zona["zona"] . '</option>';
         }
         $resultado .= '</select>
-          </div><br>
-          <div class="form-group">
-            <label for="nuevaZona">Nueva zona(si se escribe algo en este campo se la seleccion anterior no importara)</label><br>
-            <input type="text" class="form-control" id="nuevaZona" placeholder="Zona en la que esta ubicada" name="nuevaZona">
-          </div>
-          <button type="submit" class="btn btn-primary">Enviar</button>
-        </form>';
+        </div><br>
+        <div class="form-group">
+          <label for="nuevaZona">Nueva zona(si se escribe algo en este campo se la seleccion anterior no importara)</label><br>
+          <input type="text" class="form-control" id="nuevaZona" placeholder="Zona en la que esta ubicada" name="nuevaZona">
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+      </form>';
         return $resultado;
       }
       foreach ($cards as $card) {
         echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                content.innerHTML = `" . formularioSucursal($card) . "`
-            });";
+              content.innerHTML = `" . formularioSucursal($card) . "`
+          });";
       }
       ?>
     });
 
     document.getElementById('modificarBorrarPromo').addEventListener('click', function() {
       content.innerHTML = `<h2 class="my-4">Click en la promo a modificar</h2>
-        <div class="row">
-          <?php
-          $query = "SELECT * FROM promos";
-          $resultado = mysqli_query($conn, $query);
-          $cards = array();
-          while ($row = $resultado->fetch_assoc()) {
-            $cards[] = $row;
-          }
-          foreach ($cards as $card) {
-            echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
-            echo '<div class="card" style="width: 18rem;">';
-            echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
-            echo '<div class="card-body">';
-            echo '<h5 class="card-title">' . $card["titulo"] . '</h5>';
-            echo '<p class="card-text">' . $card["descripcion"] . '</p>';
-            echo '</div>';
-            echo '</div>';
-            echo '</div>';
-          }
+      <div class="row">
+        <?php
+        $query = "SELECT * FROM promos";
+        $resultado = mysqli_query($conn, $query);
+        $cards = array();
+        while ($row = $resultado->fetch_assoc()) {
+          $cards[] = $row;
+        }
+        foreach ($cards as $card) {
+          echo '<div class="col-sm-4" id = card' . $card["id"] . ' style="cursor: pointer;">';
+          echo '<div class="card" style="width: 18rem;">';
+          echo '<img src="../' . $card["imagen"] . '" class="card-img-top" alt="...">';
+          echo '<div class="card-body">';
+          echo '<h5 class="card-title">' . $card["titulo"] . '</h5>';
+          echo '<p class="card-text">' . $card["descripcion"] . '</p>';
+          echo '</div>';
+          echo '</div>';
+          echo '</div>';
+        }
 
-          ?>`;
+        ?>`;
       <?php
       function formularioPromo($cards)
       {
         include("conexion.php");
         $resultado = "";
         $resultado .= '<h2 class="my-4">Formulario de promociones</h2>
-        <a href="funciones/eliminarPromo.php?id=' . $cards["id"] . '">
-                    <button>Eliminar promocion</button>
-                  </a>
-        <form action="funciones/modificarPromo.php" method="post" enctype="multipart/form-data">
-          <input required name="id" type="hidden" class="form-control-sm" id="id" value="' . $cards["id"] . ' ">
-          <div class="form-group">
-            <label for="nombre">Nombre</label><br>
-            <input required name="nombre" type="text" class="form-control-sm" id="nombre" value="' . $cards["titulo"] . '">
-          </div><br>
-          <div class="form-group">
-            <label for="imagen">Nueva de la promo</label><br>
-            <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
-          </div><br>
-          <div class="form-group">
-            <label for="descripcion">Descripcion</label><br>
-            <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)">' . $cards["descripcion"] . '</textarea>
-          </div><br>
-          <div class="form-group">
-            <label for="fondo">Fondo</label><br>';
+      <a href="funciones/eliminarPromo.php?id=' . $cards["id"] . '">
+                  <button>Eliminar promocion</button>
+                </a>
+      <form action="funciones/modificarPromo.php" method="post" enctype="multipart/form-data">
+        <input required name="id" type="hidden" class="form-control-sm" id="id" value="' . $cards["id"] . ' ">
+        <div class="form-group">
+          <label for="nombre">Nombre</label><br>
+          <input required name="nombre" type="text" class="form-control-sm" id="nombre" value="' . $cards["titulo"] . '">
+        </div><br>
+        <div class="form-group">
+          <label for="imagen">Nueva de la promo</label><br>
+          <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
+        </div><br>
+        <div class="form-group">
+          <label for="descripcion">Descripcion</label><br>
+          <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)">' . $cards["descripcion"] . '</textarea>
+        </div><br>
+        <div class="form-group">
+          <label for="fondo">Fondo</label><br>';
         if ($cards["fondo"] == 1) {
           $resultado .= '<input name="fondo" type="checkbox" id="fondo" checked>
-          </div>
-          <br>
-          <div class="form-group" style="display: block;" id="co">
-            <label for="color">Color</label><br>
-            <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
-          </div><br>';
+        </div>
+        <br>
+        <div class="form-group" style="display: block;" id="co">
+          <label for="color">Color</label><br>
+          <input type="color" name="color" class="form-control-sm" value="' . $cards["color"] . '">
+        </div><br>';
         } else {
           $resultado .= '<input name="fondo" type="checkbox" id="fondo">
-        </div>
-          <br>
-          <div class="form-group" style="display: none;" id="co">
-            <label for="color">Color</label><br>
-            <input type="color" name="color" class="form-control-sm">
-          </div><br>';
+      </div>
+        <br>
+        <div class="form-group" style="display: none;" id="co">
+          <label for="color">Color</label><br>
+          <input type="color" name="color" class="form-control-sm">
+        </div><br>';
         }
         $resultado .= '<button type="submit" class="btn btn-primary my-3">Guardar</button>
-        </form>';
+      </form>';
 
         return $resultado;
       }
       foreach ($cards as $card) {
         echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                content.innerHTML = `" . formularioPromo($card) . "`
-            
-                document.getElementById('fondo').addEventListener('change', function() {
-                  if (this.checked) {
-                    document.getElementById('co').style.display = 'block';
-                    document.getElementById('color').required = true;
-                  } else {
-                    document.getElementById('co').style.display = 'none';
-                    document.getElementById('color').required = false;
-                  }
-                });  
-              });";
+              content.innerHTML = `" . formularioPromo($card) . "`
+          
+              document.getElementById('fondo').addEventListener('change', function() {
+                if (this.checked) {
+                  document.getElementById('co').style.display = 'block';
+                  document.getElementById('color').required = true;
+                } else {
+                  document.getElementById('co').style.display = 'none';
+                  document.getElementById('color').required = false;
+                }
+              });  
+            });";
       }
 
       ?>
@@ -1230,17 +1268,17 @@ if (!isset($_SESSION["usuario"])) {
 
     document.getElementById('modificarUsuario').addEventListener('click', function() {
       content.innerHTML = `<h3>Formulario para cambiar el usuario y la contraseña</h3>
-        <form id="loginForm" method="POST" action=funciones/cambiarUsuario.php">
-            <div class="form-group">
-                <label for="usuario">Usuario</label>
-                <input type="text" class="form-control" id="usuario" name="usuario" required>
-            </div>
-            <div class="form-group">
-                <label for="contrasena">Contraseña</label>
-                <input type="password" class="form-control" id="contrasena" name="contrasena" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-        </form>`;
+      <form id="loginForm" method="POST" action=funciones/cambiarUsuario.php">
+          <div class="form-group">
+              <label for="usuario">Usuario</label>
+              <input type="text" class="form-control" id="usuario" name="usuario" required>
+          </div>
+          <div class="form-group">
+              <label for="contrasena">Contraseña</label>
+              <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+      </form>`;
     });
 
     document.getElementById("modificarPrecios").addEventListener("click", function(e) {
@@ -1258,7 +1296,51 @@ if (!isset($_SESSION["usuario"])) {
           <label for="porcentaje">Porcentaje:</label>
           <input type="number" class="form-control" id="porcentaje" name="porcentaje" min="0" max="100" required>
         </div>
-        <button type="submit" class="btn btn-primary my-3">Guardar</button>`;
+        <button type="submit" class="btn btn-primary my-3">Guardar</button>
+      </form>`;
+    });
+
+    document.getElementById("descargarPrecios").addEventListener("click", function(e){
+      content.innerHTML = `
+      <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Vista previa de los datos -->
+                <table id="preview" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Descripcion</th>
+                            <th>Precio Mostrador</th>
+                            <th>PrecioPY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    $sql = "SELECT codigo, descripcion, precio, precioPY FROM productos WHERE precio > 0";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+                      while($row = $result->fetch_assoc()) {
+                        echo "<tr>";
+                        echo "<td>".$row["codigo"]."</td>";
+                        echo "<td>".$row["descripcion"]."</td>";
+                        echo "<td>".$row["precio"]."</td>";
+                        echo "<td>".$row["precioPY"]."</td>";
+                        echo "</tr>";
+                      }
+                    }
+                    ?>
+
+                        <!-- Los datos se insertarán aquí -->
+                    </tbody>
+                </table>
+
+                <!-- Botón para descargar el Excel -->
+                <a href="funciones/descargarPrecios.php" class="btn btn-primary" download>Descargar Excel</a>
+            </div>
+        </div>
+    </div>`;
+      
     });
   </script>
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

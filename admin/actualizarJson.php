@@ -12,8 +12,8 @@ if ($conn->connect_error) {
 
 // Consultas SQL
 $queries = [
-    'SELECT * FROM `productoscarta` INNER JOIN productosporsucursal ON productoscarta.id = productosporsucursal.idProductoCarta' => '/productosCarta.json',
-    'SELECT * FROM productospantalla' => '/productosPantalla.json',
+    'SELECT productoscarta.*, productos.nombre as titulo, productos.descripcion, productos.precio FROM `productoscarta` INNER JOIN productosporsucursal ON productoscarta.id = productosporsucursal.idProductoCarta INNER JOIN `productos` ON productoscarta.idProducto = productos.id;' => '/productosCarta.json',
+    'SELECT  productospantalla.*, productos.nombre, productos.precio FROM productospantalla INNER JOIN productos ON productospantalla.idProducto = productos.id' => '/productosPantalla.json',
     'SELECT * FROM promospantalla' => '/promosPantalla.json',
     'SELECT * FROM productoscarta' => '/productoscarta.json',
     'SELECT * FROM productos' => '/productos.json',
@@ -84,14 +84,7 @@ if (isset($actualizar)) {
             $sql = "UPDATE `actualizacionprecios` SET `actualizado` = '1' WHERE `actualizacionprecios`.`id` = {$actualizar["id"]}";
             $conn->query($sql);
             // Actualiza los precios en la base de datos
-            $sql = "UPDATE productoscarta SET precio = precio + precio * ({$actualizar["porcentaje"]} / 100)";
-
-            if ($conn->query($sql) === TRUE) {
-                echo "Precios actualizados correctamente";
-            } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
-            }
-            $sql = "UPDATE productospantalla SET precio = precio + precio * ({$actualizar["porcentaje"]} / 100)";
+            $sql = "UPDATE productos SET precio = precio + precio * ({$actualizar["porcentaje"]} / 100)";
 
             if ($conn->query($sql) === TRUE) {
                 echo "Precios actualizados correctamente";
