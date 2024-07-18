@@ -3,7 +3,7 @@
         "id": 1,
         "titulo": "bruno",
         "descripcion": "manso producto",
-        "imagen": "\/sus",
+        "imagen": "\/bgSus.jpg",
         "precio": 300,
         "destacado": 0,
         "cafeteria": 0,
@@ -13,7 +13,7 @@
     },
     {
         "id": 2,
-        "titulo": "bruno2",
+        "titulo": "bruno26",
         "descripcion": "manso producto",
         "imagen": "\/sus",
         "precio": 300,

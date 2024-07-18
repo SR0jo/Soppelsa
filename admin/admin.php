@@ -3,13 +3,13 @@ include("conexion.php");
 include("funciones/proteger.php");
 
 session_start();
-
+/*
 if (!isset($_SESSION["usuario"])) {
   // El usuario no está logueado, redirigir al formulario de inicio de sesión
   header('Location: /Pages/Login/');
   exit;
 }
-
+*/
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -274,10 +274,6 @@ if (!isset($_SESSION["usuario"])) {
                     <label for="cafeteria">Categoria cafeteria</label><br>
                     <input name="cafeteria" type="checkbox" id="cafeteria">
                 </div>
-                <div class="form-group">
-                    <label for="promo">Categoria promo</label><br>
-                    <input name="promo" type="checkbox" id="promo">
-                </div>
             </div>
             <div class="form-group" id="precioProducto">
             <label for="codigo">Codigo de producto</label><br>
@@ -416,19 +412,22 @@ if (!isset($_SESSION["usuario"])) {
         <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $card["id"] . '">
           <div class="form-group">
             <label for="imagenProducto">Nueva imagen de la promo</label><br>
-            <input required name="imagen" type="file" class="form-control-file" id="imagenProducto">
+            <img src="../' . $card["imagen"] . '" style="width:10%" alt="...">
+            <input name="imagen" type="file" class="form-control-file" id="imagenProducto">
           </div><br>
           <div class="form-group" id="precioProducto">
             <label for="precio">Precio</label><br>
             <input required name="precio" type="text" class="form-control-sm" id="precio" value="' . $card["precio"] . '">
-          </div><br>
-          <button type="submit" class="btn btn-primary my-3">Guardar</button>
+          </div><br>';
+          
+          
+          $resultado .='<button type="submit" class="btn btn-primary my-3">Guardar</button>
         </form>';
         return $resultado;
       }
       foreach ($cards as $card) {
         echo "document.getElementById('card" . $card["id"] . "').addEventListener('click', function(){
-                            content.innerHTML = `" . formularioPromoPantalla($card) . "`;
+        content.innerHTML = `" . formularioPromoPantalla($card) . "`;
         });";
       }
       ?>
@@ -550,6 +549,40 @@ if (!isset($_SESSION["usuario"])) {
           <label for="color">Color</label><br>
           <input type="color" name="color" class="form-control-sm">
         </div><br>
+        <div class="form-group">
+                <label for="agregarProductoCarta">Agregar promo a la carta</label><br>
+                <input name="agregarPromoCarta" type="checkbox" id="agregarPromoCarta">
+              </div>
+              <div id="formPromoCarta" style="display:none">
+                <h2 class="my-4">Formulario de la promo para la carta</h2>
+                <div class="form-group">
+                  <label for="imagenPromoCarta">Imagen de la promo para la carta</label><br>
+                  <input name="imagenCarta" type="file" class="form-control-file" id="imagenPromoCarta">
+                </div><br>
+                <div class="form-group">
+                  <h4 for="sucursales">Sucursales en donde esta la promo</h4><br>
+                  <?php
+                  $query = "SELECT * FROM sucursales";
+                  $resultado = mysqli_query($conn, $query);
+                  $sucursales = array();
+                  while ($row = $resultado->fetch_assoc()) {
+                    $sucursales[] = $row;
+                  }
+                  foreach ($sucursales as $sucursal) {
+                    echo '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+                  }
+                  ?>
+                </div><br>
+                <br>
+                <div class="form-group">
+                  <label for="destacarCarta">Destacar en carta (Esto va a hacer que la promo salga por encima de los no destacados)</label><br>
+                  <input name="destacarCarta" type="checkbox" id="destacarCarta">
+                </div>
+                <div class="form-group" id="precioProducto">
+                  <label for="precio">Precio </label><br>
+                  <input name="precio" type="number" class="form-control-sm" id="precio"><br>
+                </div>
+            </div>
           <button type="submit" class="btn btn-primary my-3">Guardar</button>
       </form>`;
       document.getElementById('fondo').addEventListener('change', function() {
@@ -559,6 +592,19 @@ if (!isset($_SESSION["usuario"])) {
         } else {
           document.getElementById('co').style.display = 'none';
           document.getElementById("color").required = false;
+        }
+      });
+      document.getElementById('agregarPromoCarta').addEventListener('click', function() {
+        if (this.checked) {
+          carta = true;
+          document.getElementById('formPromoCarta').style.display = 'block';
+          document.getElementById('imagenPromoCarta').required = true;
+          document.getElementById('precio').required = true;
+        } else {
+          carta = false;
+          document.getElementById('formPromoCarta').style.display = 'none';
+          document.getElementById('imagenPromoCarta').required = false;
+          document.getElementById('precio').required = false;
         }
       });
     });
@@ -690,7 +736,9 @@ if (!isset($_SESSION["usuario"])) {
                 </div><br>
                 <div class="form-group">
                     <label for="imagenProducto">Reeplazar imagen del producto</label><br>
-                    <input required name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
+                    <img src="../' . $cards["imagen"] . '" style="width:10%" alt="...">
+                    <input name="imagenProducto" type="file" class="form-control-file" id="imagenProducto" >
+                    
                 </div><br>
                 <div class="form-group" id="categoria">
                 <label>Categorias</label><br>';
@@ -738,7 +786,7 @@ if (!isset($_SESSION["usuario"])) {
           $resultado .= '<input name="destacar" type="checkbox" id="destacar" checked>';
         else
           $resultado .= '<input name="destacar" type="checkbox" id="destacar">';
-        $resultado .= '</div>
+          $resultado .= '</div>
                 <br>
                 <div class="form-group">
                     <label for="color">Color</label><br>
@@ -760,7 +808,8 @@ if (!isset($_SESSION["usuario"])) {
         <h2 class="my-4">Formulario de producto para pantallas</h2>
           <div class="form-group">
             <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
-            <input required name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
+            <img src="../' . $productoPantalla["imagen"] . '" style="width:10%" alt="...">
+            <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
           </div><br>
           <div class="form-group">
             <label for="productoGeneral">Producto General</label><br>';
@@ -804,10 +853,11 @@ if (!isset($_SESSION["usuario"])) {
           <h2 class="my-4">Formulario de producto para la carta</h2>
             <div class="form-group">
               <label for="imagenProductoCarta">Nueva imagen del producto</label><br>
+              <img src="../' . $productoCarta["imagen"] . '" style="width:10%" alt="...">
               <input name="imagenProductoCarta" type="file" class="form-control-file" id="imagenProductoCarta">
             </div><br>
             <div class="form-group">
-              <label for="sucursales">Sucursales en donde hay del producto</label><br>';
+              <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>';
           $query = "SELECT * FROM sucursales";
           $result = mysqli_query($conn, $query);
           $sucursales = array();
@@ -853,15 +903,7 @@ if (!isset($_SESSION["usuario"])) {
             $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria" checked>';
           else
             $resultado .= '<input name="cafeteria" type="checkbox" id="cafeteria">';
-          $resultado .= '</div>
-          <div class="form-group">
-          <label for="promo">Categoria promo</label><br>';
-          if ($productoCarta["promos"] == 1)
-            $resultado .= '<input name="promo" type="checkbox" id="promo" checked>';
-          else
-            $resultado .= '<input name="promo" type="checkbox" id="promo">';
-          $resultado .= '</div>
-          </div>';
+          $resultado .= '</div>';
         } else {
           $resultado .= '
           <div class="form-group">
@@ -875,7 +917,7 @@ if (!isset($_SESSION["usuario"])) {
                   <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
                 </div><br>
                 <div class="form-group">
-                  <label for="sucursales">Sucursales en donde hay del producto</label><br>';
+                  <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>';
 
           $query = "SELECT * FROM sucursales";
           $sql = mysqli_query($conn, $query);
@@ -901,13 +943,9 @@ if (!isset($_SESSION["usuario"])) {
                     <label for="cafeteria">Categoria cafeteria</label><br>
                     <input name="cafeteria" type="checkbox" id="cafeteria">
                 </div>
-                <div class="form-group">
-                    <label for="promo">Categoria promo</label><br>
-                    <input name="promo" type="checkbox" id="promo">
-                </div>
             </div>';
         }
-        if (isset($productoCarta) && $productoPantalla) {
+        if (isset($productoCarta) || isset($productoPantalla)) {
           $resultado .= '<div class="form-group" id="precioProducto">
             <label for="codigo">Codigo de producto</label><br>
             <input required name="codigo" type="number" class="form-control-sm" id="codigo" value="' . $cards["codigo"] . '"><br>
@@ -1022,7 +1060,8 @@ if (!isset($_SESSION["usuario"])) {
                 <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
                 <div class="form-group">
                     <label for="nombreSabor">Nombre</label><br>
-                    <input required name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
+                    <img src="../' . $cards["imagen"] . '" style="width:10%" alt="...">
+                    <input name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
                 </div><br>
                 <div class="form-group">
                     <label for="imagenSabor">Reeplazar imagen del sabor</label><br>
@@ -1216,7 +1255,7 @@ if (!isset($_SESSION["usuario"])) {
         </div><br>
         <div class="form-group">
           <label for="imagen">Nueva de la promo</label><br>
-          <input required name="imagen" type="file" class="form-control-file" id="imagen"><br>
+          <input name="imagen" type="file" class="form-control-file" id="imagen"><br>
         </div><br>
         <div class="form-group">
           <label for="descripcion">Descripcion</label><br>
@@ -1241,6 +1280,101 @@ if (!isset($_SESSION["usuario"])) {
           <input type="color" name="color" class="form-control-sm">
         </div><br>';
         }
+        $con = "SELECT * FROM promoscarta where idPromo = {$cards["id"]}";
+        // Ejecución de la consulta
+        $sql = mysqli_query($conn, $con);
+        while ($row = $sql->fetch_assoc()) {
+          $promoCarta = $row;
+        }
+        if (isset($promoCarta)) {
+          $resultado .= '
+          <div class="form-group">
+                <label for="agregarPromoCarta">Agregar promo a la carta</label><br>
+                <input name="agregarPromoCarta" type="checkbox" id="agregarPromoCarta" checked>
+              </div>
+          <div id="formProductoCarta">
+          <h2 class="my-4">Formulario de la promo para la carta</h2>
+            <div class="form-group">
+              <label for="imagenPromoCarta">Nueva imagen de la promo</label><br>
+              <img src="../' . $promoCarta["imagen"] . '" style="width:10%" alt="...">
+              <input name="imagenPromoCarta" type="file" class="form-control-file" id="imagenPromoCarta">
+            </div><br>
+            <div class="form-group">
+              <h4 for="sucursales">Sucursales en donde estara la promo</h4><br>';
+          $query = "SELECT * FROM sucursales";
+          $result = mysqli_query($conn, $query);
+          $sucursales = array();
+          while ($row = $result->fetch_assoc()) {
+            $sucursales[] = $row;
+          }
+          $query = "SELECT * FROM promosporsucursal WHERE idPromoCarta = {$promoCarta["id"]} ";
+          $result = mysqli_query($conn, $query);
+          $promoSucursal = array();
+          while ($row = $result->fetch_assoc()) {
+            $promoSucursal[] = $row;
+          }
+          foreach ($sucursales as $sucursal) {
+            $aux = false;
+            foreach ($promoSucursal as $promo) {
+              if ($promo["idSucursal"] == $sucursal["id"]) {
+                $aux = true;
+              }
+            }
+            if ($aux)
+              $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal" checked> <p> ' . $sucursal["sucursal"] . '</p>';
+            else
+              $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+          }
+          $resultado .= '</div><br>
+            <div class="form-group">
+          <label for="destacar">Destacar en carta (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>';
+          if ($promoCarta["destacado"] == 1)
+            $resultado .= '<input name="destacarCarta" type="checkbox" id="destacarCarta" checked>';
+          else
+            $resultado .= '<input name="destacarCarta" type="checkbox" id="destacar">';
+          $resultado .= '</div>
+          <div class="form-group" id="precioProducto">
+                  <label for="precio">Precio </label><br>
+                  <input name="precio" type="number" class="form-control-sm" id="precio" value="'.$promoCarta["precio"].'"><br>
+                </div>
+          </div>';
+        } else {
+          $resultado .= '
+          <div class="form-group">
+                <label for="agregarPromoCarta">Agregar promo a la carta</label><br>
+                <input name="agregarPromoCarta" type="checkbox" id="agregarPromoCarta">
+              </div>
+              <div id="formPromoCarta" style="display:none">
+                <h2 class="my-4">Formulario de producto para la carta</h2>
+                <div class="form-group">
+                  <label for="imagenPromoCarta">Imagen del producto para la carta</label><br>
+                  <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
+                </div><br>
+                <div class="form-group">
+                  <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>';
+
+          $query = "SELECT * FROM sucursales";
+          $sql = mysqli_query($conn, $query);
+          $sucursales = array();
+          while ($row = $sql->fetch_assoc()) {
+            $sucursales[] = $row;
+          }
+          foreach ($sucursales as $sucursal) {
+            $resultado .= '<input name="' . $sucursal["id"] . '" type="checkbox" id="sucursal"> <p> ' . $sucursal["sucursal"] . '</p>';
+          }
+
+          $resultado .= '</div><br>
+                <br>
+                <div class="form-group">
+                  <label for="destacarCarta">Destacar en carta (Esto va a hacer que el producto salga por encima de los no destacados)</label><br>
+                  <input name="destacarCarta" type="checkbox" id="destacarCarta">
+                </div>
+                <div class="form-group" id="precioProducto">
+                  <label for="precio">Precio </label><br>
+                  <input name="precio" type="number" class="form-control-sm" id="precio"><br>
+                </div>
+            </div>';
+        }
         $resultado .= '<button type="submit" class="btn btn-primary my-3">Guardar</button>
       </form>';
 
@@ -1259,6 +1393,19 @@ if (!isset($_SESSION["usuario"])) {
                   document.getElementById('color').required = false;
                 }
               });  
+              document.getElementById('agregarPromoCarta').addEventListener('click', function() {
+                if (this.checked) {
+                  carta = true;
+                  document.getElementById('formPromoCarta').style.display = 'block';
+                  document.getElementById('imagenPromoCarta').required = true;
+                  document.getElementById('precio').required = true;
+                } else {
+                  carta = false;
+                  document.getElementById('formPromoCarta').style.display = 'none';
+                  document.getElementById('imagenPromoCarta').required = false;
+                  document.getElementById('precio').required = false;
+                }
+              });
             });";
       }
 
@@ -1282,7 +1429,7 @@ if (!isset($_SESSION["usuario"])) {
     });
 
     document.getElementById("modificarPrecios").addEventListener("click", function(e) {
-      content.innerHTML = `<h2 class="my-4">Actulizar precios</h2>
+      content.innerHTML = `<h2 class="my-4">Actualizar precios</h2>
       <form action="actualizarPrecios.php" method="post">
         <div class="form-group">
           <label for="fecha">Fecha:</label>
@@ -1339,7 +1486,7 @@ if (!isset($_SESSION["usuario"])) {
                 <a href="funciones/descargarPrecios.php" class="btn btn-primary" download>Descargar Excel</a>
             </div>
         </div>
-    </div>`;
+      </div>`;
       
     });
   </script>

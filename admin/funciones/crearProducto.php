@@ -87,7 +87,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $destacar = isset($_POST['destacarCarta']) ? 1 : 0;
             $helado = isset($_POST['helado']) ? 1 : 0;
             $cafeteria = isset($_POST['cafeteria']) ? 1 : 0;
-            $promo = isset($_POST['promo']) ? 1 : 0;
             $imagen = $_FILES["imagenCarta"]["name"];
             // Subida de la imagen
             $target_dir = "../../Imagenes carta/";

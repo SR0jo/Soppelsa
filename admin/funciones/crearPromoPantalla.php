@@ -5,6 +5,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recuperar los datos del formulario
     $imagen = $_FILES['imagen']['name'];
     $precio = $_POST['precio'];
+    $orientacion = isset($_POST["orientacion"]) == "horizontal" ? 1 : 0; 
 
     // Subir el archivo de imagen
     $target_dir = "../../Imagenes pantalla/";
@@ -12,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     move_uploaded_file($_FILES["imagen"]["tmp_name"], $target_file);
 
     // Preparar la consulta SQL
-    $sql = "INSERT INTO promosPantalla (imagen, precio) VALUES ( 'Imagenes pantalla/ $imagen', $precio)";
+    $sql = "INSERT INTO promosPantalla (imagen, precio, orientacion) VALUES ( 'Imagenes pantalla/ $imagen', $precio, $orientacion)";
     if ($conn->query($sql) === TRUE) {
         echo "Producto creado con éxito.";
     }

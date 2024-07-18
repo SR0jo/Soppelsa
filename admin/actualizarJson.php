@@ -12,10 +12,11 @@ if ($conn->connect_error) {
 
 // Consultas SQL
 $queries = [
-    'SELECT productoscarta.*, productos.nombre as titulo, productos.descripcion, productos.precio FROM `productoscarta` INNER JOIN productosporsucursal ON productoscarta.id = productosporsucursal.idProductoCarta INNER JOIN `productos` ON productoscarta.idProducto = productos.id;' => '/productosCarta.json',
+    'SELECT productoscarta.*, productos.nombre as titulo, productos.descripcion, productos.precio, productosporsucursal.idSucursal FROM `productoscarta` INNER JOIN productosporsucursal ON productoscarta.id = productosporsucursal.idProductoCarta INNER JOIN `productos` ON productoscarta.idProducto = productos.id;' => '/productosCarta.json',
     'SELECT  productospantalla.*, productos.nombre, productos.precio FROM productospantalla INNER JOIN productos ON productospantalla.idProducto = productos.id' => '/productosPantalla.json',
     'SELECT * FROM promospantalla' => '/promosPantalla.json',
     'SELECT * FROM productoscarta' => '/productoscarta.json',
+    'SELECT promoscarta.id,promos.titulo, promos.descripcion, promoscarta.precio,promoscarta.imagen,promoscarta.destacado, promosporsucursal.idSucursal FROM `promoscarta` INNER JOIN promosporsucursal ON promoscarta.id = promosporsucursal.idPromoCarta INNER JOIN `promos` ON promoscarta.idPromo = promos.id; ' => '/promosCarta.json',
     'SELECT * FROM productos' => '/productos.json',
     'SELECT * FROM sabores' => '/sabores.json',
     'SELECT * FROM sucursales' => '/sucursales.json',
@@ -29,22 +30,28 @@ $queries = [
      INNER JOIN zonas ON sucursales.idZona = zonas.id' => '/sucursales.json',
     'SELECT * FROM zonas' => '/zonas.json'
 ];
+
 foreach ($queries as $query => $file) {
     // Ejecutar la consulta
     if ($result = $conn->query($query)) {
         // Obtener los resultados como un array asociativo
         $data = $result->fetch_all(MYSQLI_ASSOC);
 
-        // Convertir los datos al tipo correcto
-        foreach ($data as $i => $row) {
-            foreach ($row as $key => $value) {
+        // Liberar el conjunto de resultados
+        $result->free();
+
+        // Convertir los datos al tipo correcto y manejar caracteres especiales
+        foreach ($data as &$row) {
+            foreach ($row as $key => &$value) {
                 if (is_numeric($value)) {
                     // Convertir los números a int o float
-                    $data[$i][$key] = strpos($value, '.') === false ? (int)$value : (float)$value;
+                    $value = strpos($value, '.') === false ? (int)$value : (float)$value;
                 } elseif ($value === 'true' || $value === 'false') {
                     // Convertir los booleanos a bool
-                    $data[$i][$key] = $value === 'true';
+                    $value = $value === 'true';
                 }
+                // Aplicar utf8_encode o utf8_decode según sea necesario
+                $value = utf8_encode($value); // Asegurar que los datos estén en UTF-8
             }
         }
 
@@ -53,9 +60,7 @@ foreach ($queries as $query => $file) {
 
         // Guardar el JSON en un archivo
         file_put_contents("../Json" . $file, $json);
-
-        // Liberar el conjunto de resultados
-        $result->free();
+        
     } else {
         echo "Error: " . $mysqli->error;
     }

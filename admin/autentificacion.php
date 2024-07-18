@@ -14,7 +14,7 @@ while ($row = $resultado->fetch_assoc()) {
 
 if (!empty($user)) {
     $usuario_correcto = $user["usuario"];
-    $contraseña_correcta = $user["contrasena"];
+    $contraseña_correcta = $user["contraseña"]; // Asumiendo que esta es la contraseña hash
 } else {
     $usuario_correcto = "";
     $contraseña_correcta = "";
@@ -32,13 +32,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contraseña = $_POST["contraseña"];
 
     if ($usuario != $usuario_correcto) {
-header('Location: /Pages/Login/');
+        header('Location: /Pages/Login/');
         echo "Usuario incorrecto.\n";
-    } elseif ($contraseña != $contraseña_correcta) {
-header('Location: /Pages/Login/');
+    } elseif (!password_verify($contraseña, $contraseña_correcta)) {
+        header('Location: /Pages/Login/');
         echo "Contraseña incorrecta.\n";
     } elseif (intval($responseKeys["success"]) !== 1) {
-header('Location: /Pages/Login/');
+        header('Location: /Pages/Login/');
         echo "Captcha no validado.\n";
     } else {
         // Inicio de sesión exitoso, establecer variable de sesión y redirigir

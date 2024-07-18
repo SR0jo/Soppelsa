@@ -98,15 +98,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $sql = "INSERT INTO productoscarta ( imagen, destacado, helados, cafeteria, promos, idProducto) VALUES ( 'Imagenes carta/$imagen', $destacar, $helado, $cafeteria, $promo, $id)";
 
             if ($conn->query($sql) === TRUE) {
-                $query = "SELECT MAX(id) AS max_id FROM productoscarta";
+                $query = "DELETE FROM productosporsucursal WHERE idProductoCarta = $id";
                 $resultado = mysqli_query($conn, $query);
 
-                if ($resultado) {
-                    $fila = mysqli_fetch_assoc($resultado);
-                    $max_id = $fila['max_id'];
-                } else {
-                    echo "Error: " . mysqli_error($conn);
-                }
+                
                 $query = "SELECT * FROM sucursales";
                 $resultado = mysqli_query($conn, $query);
                 $sucursales = array();
@@ -115,7 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
                 foreach ($sucursales as $sucursal) {
                     if (isset($_POST[$sucursal["id"]])) {
-                        $sql = "INSERT INTO `productosporsucursal` (`id`, `idSucursal`, `idProductoCarta`) VALUES (NULL, '{$sucursal["id"]}', '$max_id')";
+                        $sql = "INSERT INTO `productosporsucursal` (`id`, `idSucursal`, `idProductoCarta`) VALUES (NULL, '{$sucursal["id"]}', '$id')";
                         if ($conn->query($sql) === TRUE)
                             echo "hecho";
                     }
