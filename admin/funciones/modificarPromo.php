@@ -51,7 +51,7 @@ if ($conn->query($sql) === TRUE) {
         }
 
         if ($conn->query($sql) === TRUE) {
-            $query = "DELETE FROM productosporsucursal WHERE idProductoCarta = $id";
+            $query = "DELETE FROM promosporsucursal WHERE idPromoCarta = $id";
             $resultado = mysqli_query($conn, $query);
 
             $query = "SELECT * FROM sucursales";

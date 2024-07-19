@@ -39,13 +39,14 @@ if ($conn->query($sql) === TRUE) {
         // Recogida de datos del formulario
         $destacar = isset($_POST['destacarCarta']) ? 1 : 0;
         $imagen = $_FILES["imagenCarta"]["name"];
+        $precio = $_POST["precio"];
         // Subida de la imagen
         $target_dir = "../../Imagenes carta/";
         $target_file = $target_dir . basename($_FILES["imagenCarta"]["name"]);
         move_uploaded_file($_FILES["imagenCarta"]["tmp_name"], $target_file);
 
         // Inserción en la base de datos
-        $sql = "INSERT INTO promoscarta ( imagen, destacado, idPromo) VALUES ( 'Imagenes carta/$imagen', $destacar, $max_id)";
+        $sql = "INSERT INTO promoscarta ( imagen, destacado,precio, idPromo) VALUES ( 'Imagenes carta/$imagen', $destacar,$precio, $max_id)";
 
         if ($conn->query($sql) === TRUE) {
             $query = "SELECT MAX(id) AS max_id FROM promoscarta";

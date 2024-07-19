@@ -1,8 +1,6 @@
 <?php
 include("conexion.php");
 include("funciones/proteger.php");
-
-session_start();
 /*
 if (!isset($_SESSION["usuario"])) {
   // El usuario no está logueado, redirigir al formulario de inicio de sesión

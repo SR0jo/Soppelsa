@@ -50,8 +50,6 @@ foreach ($queries as $query => $file) {
                     // Convertir los booleanos a bool
                     $value = $value === 'true';
                 }
-                // Aplicar utf8_encode o utf8_decode según sea necesario
-                $value = utf8_encode($value); // Asegurar que los datos estén en UTF-8
             }
         }
 

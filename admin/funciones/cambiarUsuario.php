@@ -8,8 +8,6 @@ include("cambiarString.php");
 $usuario = $_POST['usuario'];
 $usuario = cambiarString($usuario);
 $contrasena = $_POST['contrasena'];
-$contrasena = cambiarString($contrasena);
-
 // Encriptar la contraseña
 $contrasenaEncriptada = password_hash($contrasena, PASSWORD_DEFAULT);
 
@@ -20,10 +18,10 @@ while ($row = $resultado->fetch_assoc()) {
 }
 
 if (!empty($user)) {
-    $query = "UPDATE `usuario` SET `usuario` = '$usuario',`contraseña` = '$contrasenaEncriptada' WHERE `usuario`.`id` = $id";
+    $query = "UPDATE `usuario` SET `usuario` = '$usuario',`contrasena` = '$contrasenaEncriptada' WHERE `usuario`.`id` = {$user['id']}";
     mysqli_query($conn, $query);
 } else {
-    $query = "INSERT INTO `usuario` (`id`, `usuario`, `contraseña`) VALUES (1, '$usuario', '$contrasenaEncriptada')";
+    $query = "INSERT INTO `usuario` (`id`, `usuario`, `contrasena`) VALUES (1, '$usuario', '$contrasenaEncriptada')";
 }
 
 header('Location: ../admin.php');
