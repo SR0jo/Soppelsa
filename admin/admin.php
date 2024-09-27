@@ -5,13 +5,13 @@ $ttl = 60 * 60 * 72; // 72 horas en segundos
 
 // Establece el tiempo de vida de la cookie de sesión
 session_set_cookie_params($ttl);
-/*
+
 if (!isset($_SESSION["usuario"])) {
   // El usuario no está logueado, redirigir al formulario de inicio de sesión
   header('Location: /Pages/Login/');
   exit;
 }
-*/
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -250,7 +250,7 @@ if (!isset($_SESSION["usuario"])) {
                   <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
                 </div><br>
                 <div class="form-group">
-                  <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>
+                  <h4 for="sucursales">Sucursales en donde esta el producto</h4><br>
                   <?php
                   $query = "SELECT * FROM sucursales";
                   $resultado = mysqli_query($conn, $query);
@@ -540,7 +540,7 @@ if (!isset($_SESSION["usuario"])) {
         </div><br>
         <div class="form-group">
           <label for="descripcion">Descripcion</label><br>
-          <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)"></textarea>
+          <textarea name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)"></textarea>
         </div><br>
         <div class="form-group">
           <label for="fondo">Fondo</label><br>
@@ -803,40 +803,40 @@ if (!isset($_SESSION["usuario"])) {
           $productoPantalla = $row;
         }
         if (isset($productoPantalla)) {
-          $resultado .= '<input type="checkbox" name="agregarProductoPantalla" checked>  
+          $resultado .= '<input type="checkbox" name="agregarProductoPantalla" id="agregarProductoPantalla" checked>  
           </div><br>';
           $resultado .= '
-        <div id="agregarProductoPantalla">
-        <h2 class="my-4">Formulario de producto para pantallas</h2>
-          <div class="form-group">
-            <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
-            <img src="../' . $productoPantalla["imagen"] . '" style="width:10%" alt="...">
-            <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
-          </div><br>
-          <div class="form-group">
-            <label for="productoGeneral">Producto General</label><br>';
-          if ($productoPantalla["productoGeneral"] == 0)
-            $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
-          else
-            $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral" checked>';
-          $resultado .= '</div><br></div>
-        ';
+          <div id="formProductoPantalla">
+          <h2 class="my-4">Formulario de producto para pantallas</h2>
+            <div class="form-group">
+              <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
+              <img src="../' . $productoPantalla["imagen"] . '" style="width:10%" alt="...">
+              <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
+            </div><br>
+            <div class="form-group">
+              <label for="productoGeneral">Producto General</label><br>';
+            if ($productoPantalla["productoGeneral"] == 0)
+              $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
+            else
+              $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral" checked>';
+            $resultado .= '</div><br></div>
+          ';
         } else {
-          $resultado .= '<input type="checkbox" name="agregarProductoPantalla">  
+          $resultado .= '<input type="checkbox" name="agregarProductoPantalla"  id="agregarProductoPantalla">  
             </div><br>';
           $resultado .= '
-        <div id="agregarProductoPantalla" style="display:none">
-        <h2 class="my-4">Formulario de producto para pantallas</h2>
-          <div class="form-group">
-            <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
-            <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
-          </div><br>
-          <div class="form-group">
-            <label for="productoGeneral">Producto General</label><br>';
-          $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
+          <div id="formProductoPantalla" style="display:none">
+          <h2 class="my-4">Formulario de producto para pantallas</h2>
+            <div class="form-group">
+              <label for="imagenProductoPantalla">Nueva imagen del producto de pantalla</label><br>
+              <input name="imagenProductoPantalla" type="file" class="form-control-file" id="imagenProductoPantalla">
+            </div><br>
+            <div class="form-group">
+              <label for="productoGeneral">Producto General</label><br>';
+            $resultado .= '<input name="productoGeneral" type="checkbox" id="productoGeneral">';
 
-          $resultado .= '</div><br></div>
-        ';
+            $resultado .= '</div><br></div>
+          ';
         }
 
         $con = "SELECT * FROM productoscarta where idProducto = {$cards["id"]}";
@@ -859,14 +859,14 @@ if (!isset($_SESSION["usuario"])) {
               <input name="imagenProductoCarta" type="file" class="form-control-file" id="imagenProductoCarta">
             </div><br>
             <div class="form-group">
-              <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>';
+              <h4 for="sucursales">Sucursales en donde esta el producto</h4><br>';
           $query = "SELECT * FROM sucursales";
           $result = mysqli_query($conn, $query);
           $sucursales = array();
           while ($row = $result->fetch_assoc()) {
             $sucursales[] = $row;
           }
-          $query = "SELECT * FROM productosporsucursal WHERE idProductoCarta = {$productoCarta["id"]} ";
+          $query = "SELECT * FROM productosporsucursal WHERE idProductoCarta = {$cards["id"]} ";
           $result = mysqli_query($conn, $query);
           $productoSucursal = array();
           while ($row = $result->fetch_assoc()) {
@@ -919,7 +919,7 @@ if (!isset($_SESSION["usuario"])) {
                   <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
                 </div><br>
                 <div class="form-group">
-                  <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>';
+                  <h4 for="sucursales">Sucursales en donde esta el producto</h4><br>';
 
           $query = "SELECT * FROM sucursales";
           $sql = mysqli_query($conn, $query);
@@ -957,14 +957,14 @@ if (!isset($_SESSION["usuario"])) {
             <input required name="precioPY" type="number" class="form-control-sm" id="precioPY" value="' . $cards["precioPY"] . '">
           </div><br>';
         } else {
-          $resultado .= '<div class="form-group" id="precioProducto" style="display:none">
-        <label for="codigo">Codigo de producto</label><br>
-        <input  name="codigo" type="number" class="form-control-sm" id="codigo"><br>
-            <label for="precio">Precio mostrador</label><br>
-            <input  name="precio" type="number" class="form-control-sm" id="precio"><br>
-            <label for="precio">Precio pedidos ya</label><br>
-            <input  name="precioPY" type="number" class="form-control-sm" id="precioPY">
-          </div><br>';
+            $resultado .= '<div class="form-group" id="precioProducto" style="display:none">
+          <label for="codigo">Codigo de producto</label><br>
+          <input  name="codigo" type="number" class="form-control-sm" id="codigo"><br>
+              <label for="precio">Precio mostrador</label><br>
+              <input  name="precio" type="number" class="form-control-sm" id="precio"><br>
+              <label for="precio">Precio pedidos ya</label><br>
+              <input  name="precioPY" type="number" class="form-control-sm" id="precioPY">
+            </div><br>';
         }
         $resultado .= '
         <button type="submit" class="btn btn-primary my-3">Guardar</button>
@@ -1062,12 +1062,13 @@ if (!isset($_SESSION["usuario"])) {
                 <input required name="id" type="hidden" class="form-control-sm" id="idSabor" value="' . $cards["id"] . ' ">
                 <div class="form-group">
                     <label for="nombreSabor">Nombre</label><br>
-                    <img src="../' . $cards["imagen"] . '" style="width:10%" alt="...">
+                    
                     <input name="nombreSabor" type="text" class="form-control-sm" id="nombreSabor" value="' . $cards["nombre"] . '">
                 </div><br>
                 <div class="form-group">
+                    <img src="../' . $cards["imagen"] . '" style="width:10%" alt="..."><br>
                     <label for="imagenSabor">Reeplazar imagen del sabor</label><br>
-                    <input required name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
+                    <input name="imagenSabor" type="file" class="form-control-file" id="imagenSabor" >
                 </div><br>
                 <div class="form-group" id="categoria">
                 <label>Categorias</label><br>';
@@ -1261,7 +1262,7 @@ if (!isset($_SESSION["usuario"])) {
         </div><br>
         <div class="form-group">
           <label for="descripcion">Descripcion</label><br>
-          <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)">' . $cards["descripcion"] . '</textarea>
+          <textarea name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion de la promo si es que la tiene(dejar en blanco sino)">' . $cards["descripcion"] . '</textarea>
         </div><br>
         <div class="form-group">
           <label for="fondo">Fondo</label><br>';
@@ -1353,7 +1354,7 @@ if (!isset($_SESSION["usuario"])) {
                   <input name="imagenCarta" type="file" class="form-control-file" id="imagenProductoCarta">
                 </div><br>
                 <div class="form-group">
-                  <h4 for="sucursales">Sucursales en donde hay del producto</h4><br>';
+                  <h4 for="sucursales">Sucursales en donde esta el producto</h4><br>';
 
           $query = "SELECT * FROM sucursales";
           $sql = mysqli_query($conn, $query);

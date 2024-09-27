@@ -88,7 +88,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $helado = isset($_POST['helado']) ? 1 : 0;
             $cafeteria = isset($_POST['cafeteria']) ? 1 : 0;
             $promo = isset($_POST['promo']) ? 1 : 0;
-            $imagen = $_FILES["imagenCarta"]["name"];
+            $imagen = $_FILES["imagenProductoCarta"]["name"];
             // Subida de la imagen
             $target_dir = "../../Imagenes carta/";
             $target_file = $target_dir . basename($_FILES["imagenCarta"]["name"]);

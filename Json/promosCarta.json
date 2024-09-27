@@ -1,1 +1,20 @@
-[{"id":5,"titulo":"fsadw","descripcion":"sd","precio":0,"imagen":"Imagenes carta\/RepAcc_HOME.jpg","destacado":0,"idSucursal":1},{"id":8,"titulo":"Titulo de promo","descripcion":"mansa promo","precio":333,"imagen":"Imagenes carta\/","destacado":0,"idSucursal":1},{"id":8,"titulo":"Titulo de promo","descripcion":"mansa promo","precio":333,"imagen":"Imagenes carta\/","destacado":0,"idSucursal":2},{"id":8,"titulo":"Titulo de promo","descripcion":"mansa promo","precio":333,"imagen":"Imagenes carta\/","destacado":0,"idSucursal":1}]
+[
+    {
+        "id": 5,
+        "titulo": "1/4kg",
+        "descripcion": "Un cuarto de helado con 2 sabores a tu gusto",
+        "precio": 3000,
+        "imagen": "/historia9.jpg",
+        "destacado": 0,
+        "idSucursal": 1
+    },
+    {
+        "id": 8,
+        "titulo": "Alfajor helado",
+        "descripcion": "Un delicioso alfajor helado con chocolate amargo",
+        "precio": 2000,
+        "imagen": "/alfajores.jpeg",
+        "destacado": 0,
+        "idSucursal": 1
+    }
+]
