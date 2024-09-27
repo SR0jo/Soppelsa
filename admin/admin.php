@@ -1,17 +1,17 @@
 <?php
 include("conexion.php");
-include("funciones/proteger.php");
+//include("funciones/proteger.php");
 $ttl = 60 * 60 * 72; // 72 horas en segundos
 
 // Establece el tiempo de vida de la cookie de sesión
 session_set_cookie_params($ttl);
-
+/*
 if (!isset($_SESSION["usuario"])) {
   // El usuario no está logueado, redirigir al formulario de inicio de sesión
   header('Location: /Pages/Login/');
   exit;
 }
-
+*/
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -450,23 +450,25 @@ if (!isset($_SESSION["usuario"])) {
               <label for="descripcion">Descripcion</label><br>
               <textarea required name="descripcion" rows="3" class="form-control" id="descripcion" placeholder="Descripcion del producto" ></textarea>
           </div><br>
-              <div class="form-group">
-              <label for="categoriaSelect">Categoria</label><br>
-              <select required name="categoriaSelect" class="form-control-sm" id="categoriaSelect" placeholder = "Selecciona una categoria">
-                  <option value=""  selected>Selecciona una categoria</option>
-                  <!-- Abro php para acceder a la tabla de categorias de productos y recorrerla para crear un option por cada elemento en la bd -->
-
-                  <?php
-                  $query = "SELECT * FROM categorias_sabores";
-                  $resultado = mysqli_query($conn, $query);
-                  $categorias = array();
-                  while ($row = $resultado->fetch_assoc()) {
-                    $categorias[] = $row;
-                  }
-                  foreach ($categorias as $categoria)
-                    echo '<option value="' . $categoria["id"] . '">' . $categoria["nombre"] . '</option>';
-                  ?>
-              </select>
+              <div class="form-group" id="categoria">
+            <label>Categorias</label><br>
+                    <div class="form-group">
+                        <?php
+                        $con = "SELECT * FROM categorias_sabores";
+                        // Ejecución de la consulta
+                        $resultado = mysqli_query($conn, $con);
+                        $categorias = array();
+                        while ($row = $resultado->fetch_assoc()) {
+                          $categorias[] = $row;
+                        }
+                        foreach ($categorias as $categoria) {
+                          echo '<input type="radio" id="' . $categoria['id'] . '" name="categoria0" value = "' . $categoria['id'] . '">';
+                          echo '<label for="' . $categoria['id'] . '">' . $categoria['nombre'] . '</label><br>';
+                        }
+                        ?>
+                        
+                        
+                    
           </div><br>
           <div class="form-group">
               <label for="color">Color</label><br>

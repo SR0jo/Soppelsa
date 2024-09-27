@@ -9,11 +9,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recoger los valores del formulario
     $nombreProducto = $_POST['nombreSabor'];
     $nombreProducto = cambiarString($nombreProducto);
-    $categoria = $_POST['categoriaSelect'];
     $descripcion = $_POST['descripcion'];
     $descripcion = cambiarString($descripcion);
     $destacar = isset($_POST['destacar']) ? 1 : 0;
     $color = $_POST['color'];
+    $i = 0;
+    $categorias = array();
+    while (true) {
+        if (isset($_POST['categoria' . $i])) {
+            array_push($categorias, $_POST['categoria' . $i]);
+            $i++;
+        } else
+            break;
+    }
 
     // Tratar la imagen del producto
 $imagenSabor = $_FILES['imagenSabor']['name'];
@@ -28,10 +36,22 @@ if (move_uploaded_file($ruta_temporal, $carpeta_destino.$imagenSabor)) {
 } else {
     echo "Fallo al subir el archivo.";
 }
-    $sql = "INSERT INTO `sabores` (`id`, `nombre`, `imagen`, `descripcion`, `color`, `idCategoria`, `destacado`) VALUES (NULL, '$nombreProducto', '$ruta_real', '$descripcion','$color' , '$categoria', '$destacar')";
+    $sql = "INSERT INTO `sabores` (`id`, `nombre`, `imagen`, `descripcion`, `color`, `destacado`) VALUES (NULL, '$nombreProducto', '$ruta_real', '$descripcion','$color' , '$destacar')";
     if ($conn->query($sql) === TRUE) {
         //echo "Registro actualizado con éxito";
-    } else {
+        $query = "SELECT MAX(id) AS max_id FROM sabores";
+        $resultado = mysqli_query($conn, $query);
+
+        if ($resultado) {
+            $fila = mysqli_fetch_assoc($resultado);
+            $max_id = $fila['max_id'];
+        } else {
+            echo "Error: " . mysqli_error($conn);
+        }
+        foreach ($categorias as $categoria) {
+            $sql = "INSERT INTO `categoriasisabores` (`id`, `idCategoria`, `idSabor`) VALUES (NULL, '$categoria', '$max_id')";
+            $conn->query($sql);
+        }
         //echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
