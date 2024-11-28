@@ -3,6 +3,9 @@ ob_start();
 include("proteger.php");
 include("../conexion.php");
 include("cambiarString.php");
+include("subirImagen.php");
+include("../funcionesBD.php");
+
 // Suponiendo que ya tienes una conexión a la base de datos establecida en $conn
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -26,18 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $carta = isset($_POST['agregarProductoCarta']) ? 1 : 0;
 
     // Tratar la imagen del producto
-    $imagenProducto = $_FILES['imagenProducto']['name'];
-    $ruta_temporal = $_FILES['imagenProducto']['tmp_name'];
-    $carpeta_destino = '../../Imagenes productos/';
-    $ruta_real = "/Imagenes productos/" . $imagenProducto;
-    $ruta_real = cambiarString($ruta_real);
-
-    // Mover el archivo subido a la carpeta de destino
-    if (move_uploaded_file($ruta_temporal, $carpeta_destino . $imagenProducto)) {
-        echo "Archivo subido con éxito.";
-    } else {
-        echo "Fallo al subir el archivo.";
-    }
+    $imagenProducto = uploadImage($_FILES['imagenProducto'], "Imagenes productos/");
     if ($carta == 1 || $pantalla == 1) {
         $precio = $_POST['precio'];
         $precio = str_replace(",", ".", $precio);
@@ -50,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $precioPY = 0;
         $codigo = 0;
     }
-    $sql = "INSERT INTO `productos` (`id`, `nombre`, `imagen`, `descripcion`, `destacado`, `color`,`precio`,`precioPY`,`codigo`) VALUES (NULL, '$nombreProducto', '$ruta_real', '$descripcion', '$destacar', '$color', '$precio', '$precioPY', '$codigo')";
+    $sql = "INSERT INTO `productos` (`id`, `nombre`, `imagen`, `descripcion`, `destacado`, `color`,`precio`,`precioPY`,`codigo`) VALUES (NULL, '$nombreProducto', '$imagenProducto', '$descripcion', '$destacar', '$color', '$precio', '$precioPY', '$codigo')";
     if ($conn->query($sql) === TRUE) {
         //echo "Registro actualizado con éxito";
         $query = "SELECT MAX(id) AS max_id FROM productos";
@@ -68,16 +60,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         if ($pantalla == 1) {
             // Recuperar los datos del formulario
-            $imagenProducto = $_FILES['imagenProductoPantalla']['name'];
+            $imagenProducto = uploadImage($_FILES['imagenProductoPantalla'],"Imagenes pantalla/");
             $productoGeneral = isset($_POST['productoGeneral']) ? 1 : 0;
 
-            // Subir el archivo de imagen
-            $target_dir = "../../Imagenes pantalla/";
-            $target_file = $target_dir . basename($imagenProducto);
-            move_uploaded_file($_FILES["imagenProductoPantalla"]["tmp_name"], $target_file);
-
             // Preparar la consulta SQL
-            $sql = "INSERT INTO productospantalla ( imagen, productoGeneral, idProducto) VALUES ( 'Imagenes pantalla/ $imagenProducto', $productoGeneral, $max_id)";
+            $sql = "INSERT INTO productospantalla ( imagen, productoGeneral, idProducto) VALUES ( '$imagenProducto', $productoGeneral, $max_id)";
             if ($conn->query($sql) === TRUE) {
                 echo "Producto creado con éxito.";
             }
@@ -87,14 +74,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $destacar = isset($_POST['destacarCarta']) ? 1 : 0;
             $helado = isset($_POST['helado']) ? 1 : 0;
             $cafeteria = isset($_POST['cafeteria']) ? 1 : 0;
-            $imagen = $_FILES["imagenProductoCarta"]["name"];
-            // Subida de la imagen
-            $target_dir = "../../Imagenes carta/";
-            $target_file = $target_dir . basename($_FILES["imagenCarta"]["name"]);
-            move_uploaded_file($_FILES["imagenCarta"]["tmp_name"], $target_file);
+            $imagenCarta = uploadImage($_FILES["imagenProductoCarta"], "Imagenes carta/");
+
 
             // Inserción en la base de datos
-            $sql = "INSERT INTO productoscarta ( imagen, destacado, helados, cafeteria, promos, idProducto) VALUES ( 'Imagenes carta/$imagen', $destacar, $helado, $cafeteria, $promo, $max_id)";
+            $sql = "INSERT INTO productoscarta ( imagen, destacado, helados, cafeteria, promos, idProducto) VALUES ( '$imagenCarta', $destacar, $helado, $cafeteria, $promo, $max_id)";
 
             if ($conn->query($sql) === TRUE) {
                 $query = "SELECT MAX(id) AS max_id FROM productoscarta";
@@ -106,14 +90,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else {
                     echo "Error: " . mysqli_error($conn);
                 }
-                $query = "SELECT * FROM sucursales";
-                $resultado = mysqli_query($conn, $query);
-                $sucursales = array();
-                while ($row = $resultado->fetch_assoc()) {
-                    $sucursales[] = $row;
-                }
-                foreach ($sucursales as $sucursal) {
 
+                $sucursales = findAll("sucursales");
+                foreach ($sucursales as $sucursal) {
                     if (isset($_POST[$sucursal["id"]])) {
                         $sql = "INSERT INTO `productosporsucursal` (`id`, `idSucursal`, `idProductoCarta`) VALUES (NULL, '{$sucursal["id"]}', '$max_id')";
                         if ($conn->query($sql) === TRUE)
@@ -124,12 +103,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error: " . $sql . "<br>" . $conn->error;
             }
         }
-        
     } else {
         //echo "Error: " . $sql . "<br>" . $conn->error;
     }
 }
-
-// No olvides cerrar la conexión a la base de datos cuando ya no la necesites
 mysqli_close($conn);
 header('Location: ../admin.php');

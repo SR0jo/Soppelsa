@@ -3,6 +3,7 @@ ob_start();
 include("proteger.php");
 include("../conexion.php");
 include("cambiarString.php");
+include("subirImagen.php");
 
 // Recuperar los datos del formulario
 $nombre = $_POST['nombre'];
@@ -14,17 +15,10 @@ $color = $_POST['color'];
 $carta = isset($_POST['agregarPromoCarta']) ? 1 : 0;
 
 // Procesar la imagen
-$imagen = $_FILES['imagen']['name'];
-$target_dir = "../../Imagenes promos/"; // Cambia esto a la ruta de tu directorio
-$target_file = $target_dir . basename($imagen);
-
-// Mover la imagen al directorio
-move_uploaded_file($_FILES['imagen']['tmp_name'], $target_file);
-$ruta_real = "/Imagenes promos/" . $imagen;
-$ruta_real = cambiarString($ruta_real);
+$imagen = uploadImage($_FILES['imagen'],"Imagenes promos/");
 
 // Insertar los datos en la tabla de promociones
-$sql = "INSERT INTO `promos` (`id`, `titulo`, `imagen`, `descripcion`, `fondo`, `color`) VALUES (NULL, '$nombre', '$ruta_real', '$descripcion', '$fondo', '$color')";
+$sql = "INSERT INTO `promos` (`id`, `titulo`, `imagen`, `descripcion`, `fondo`, `color`) VALUES (NULL, '$nombre', '$imagen', '$descripcion', '$fondo', '$color')";
 if ($conn->query($sql) === TRUE) {
     $query = "SELECT MAX(id) AS max_id FROM promos";
     $resultado = mysqli_query($conn, $query);
@@ -38,15 +32,11 @@ if ($conn->query($sql) === TRUE) {
     if ($carta == 1) {
         // Recogida de datos del formulario
         $destacar = isset($_POST['destacarCarta']) ? 1 : 0;
-        $imagen = $_FILES["imagenCarta"]["name"];
+        $imagen = uploadImage($_FILES['imagen'],"Imagenes carta/");
         $precio = $_POST["precio"];
-        // Subida de la imagen
-        $target_dir = "../../Imagenes carta/";
-        $target_file = $target_dir . basename($_FILES["imagenCarta"]["name"]);
-        move_uploaded_file($_FILES["imagenCarta"]["tmp_name"], $target_file);
 
         // Inserción en la base de datos
-        $sql = "INSERT INTO promoscarta ( imagen, destacado,precio, idPromo) VALUES ( 'Imagenes carta/$imagen', $destacar,$precio, $max_id)";
+        $sql = "INSERT INTO promoscarta ( imagen, destacado,precio, idPromo) VALUES ( '$imagen', $destacar,$precio, $max_id)";
 
         if ($conn->query($sql) === TRUE) {
             $query = "SELECT MAX(id) AS max_id FROM promoscarta";

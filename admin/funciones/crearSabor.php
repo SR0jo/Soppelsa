@@ -3,6 +3,7 @@ ob_start();
 include("proteger.php");
 include("../conexion.php");
 include("cambiarString.php");
+include("subirImagen.php");
 // Suponiendo que ya tienes una conexión a la base de datos establecida en $conn
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -24,19 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Tratar la imagen del producto
-$imagenSabor = $_FILES['imagenSabor']['name'];
-$ruta_temporal = $_FILES['imagenSabor']['tmp_name'];
-$carpeta_destino = '../../Imagenes sabores/';
-$ruta_real = "/Imagenes sabores/".$imagenSabor;
-$ruta_real = cambiarString($ruta_real);
-
-// Mover el archivo subido a la carpeta de destino
-if (move_uploaded_file($ruta_temporal, $carpeta_destino.$imagenSabor)) {
-    echo "Archivo subido con éxito.";
-} else {
-    echo "Fallo al subir el archivo.";
-}
-    $sql = "INSERT INTO `sabores` (`id`, `nombre`, `imagen`, `descripcion`, `color`, `destacado`) VALUES (NULL, '$nombreProducto', '$ruta_real', '$descripcion','$color' , '$destacar')";
+    $imagenSabor = uploadImage($_FILES['imagenSabor'],"Imagenes sabores/");
+    $sql = "INSERT INTO `sabores` (`id`, `nombre`, `imagen`, `descripcion`, `color`, `destacado`) VALUES (NULL, '$nombreProducto', '$imagenSabor', '$descripcion','$color' , '$destacar')";
     if ($conn->query($sql) === TRUE) {
         //echo "Registro actualizado con éxito";
         $query = "SELECT MAX(id) AS max_id FROM sabores";
@@ -59,4 +49,3 @@ if (move_uploaded_file($ruta_temporal, $carpeta_destino.$imagenSabor)) {
 // No olvides cerrar la conexión a la base de datos cuando ya no la necesites
 mysqli_close($conn);
 header('Location: ../admin.php');
-?>

@@ -1,5 +1,5 @@
 <?php
-//Este codigo se ejecutara cada 5 minutos en la pagina para actualizar los json
+// Este código se ejecutará cada 5 minutos en la página para actualizar los JSON
 include("conexion.php");
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -16,6 +16,9 @@ $queries = [
     'SELECT  productospantalla.*, productos.nombre, productos.precio FROM productospantalla INNER JOIN productos ON productospantalla.idProducto = productos.id' => '/productosPantalla.json',
     'SELECT * FROM promospantalla' => '/promosPantalla.json',
     'SELECT * FROM productoscarta' => '/productoscarta.json',
+    'SELECT general.imagen_principal as fondoHero, general.imagen_historia as fondoHistoria, general.logo FROM general' => '/fondos.json',
+    'SELECT general.telefono FROM general' => '/whatsapp.json',
+    'SELECT * FROM historia' => '/historia.json',
     'SELECT promoscarta.id,promos.titulo, promos.descripcion, promoscarta.precio,promoscarta.imagen,promoscarta.destacado, promosporsucursal.idSucursal FROM `promoscarta` INNER JOIN promosporsucursal ON promoscarta.id = promosporsucursal.idPromoCarta INNER JOIN `promos` ON promoscarta.idPromo = promos.id; ' => '/promosCarta.json',
     'SELECT * FROM productos' => '/productos.json',
     'SELECT * FROM sabores' => '/sabores.json',
@@ -54,15 +57,21 @@ foreach ($queries as $query => $file) {
         }
 
         // Convertir los datos a JSON
-        $json = json_encode($data);
+        if ($file == '/fondos.json' || $file == '/whatsapp.json') {
+            // Convertir a JSON sin corchetes
+            $json = json_encode($data[0]);
+        } else {
+            // Convertir a JSON normalmente
+            $json = json_encode($data);
+        }
 
         // Guardar el JSON en un archivo
         file_put_contents("../Json" . $file, $json);
-        
     } else {
-        echo "Error: " . $mysqli->error;
+        echo "Error: " . $conn->error;
     }
 }
+
 $query = "SELECT * FROM actualizacionprecios where id = (SELECT MAX(id) FROM actualizacionprecios);";
 $resultado = mysqli_query($conn, $query);
 
@@ -72,6 +81,7 @@ if ($resultado) {
 } else {
     echo "Error: " . mysqli_error($conn);
 }
+
 if (isset($actualizar)) {
     // Obtén la fecha y hora de la base de datos
     $fecha_db = $actualizar['fecha'];
@@ -97,5 +107,6 @@ if (isset($actualizar)) {
         }
     }
 }
+
 // Cerrar la conexión
 $conn->close();

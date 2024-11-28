@@ -13,6 +13,8 @@ $maps = $_POST['maps'];
 $zonaSelect = $_POST['zonaSelect'];
 $nuevaZona = $_POST['nuevaZona'];
 $nuevaZona = cambiarString($nuevaZona);
+$telefono = $_POST['telefono'];
+$imagen = uploadImage($_POST["imagen"], "Imagenes sucursales/");
 
 // Si se ingresó una nueva zona, insertarla y usar su ID
 if (!empty($nuevaZona)) {
@@ -22,7 +24,7 @@ if (!empty($nuevaZona)) {
 }
 
 // Insertar los datos en la tabla de sucursales
-$query = "INSERT INTO `sucursales` (`id`, `sucursal`, `descripcion`, `link`, `maps`, `idZona`) VALUES (NULL, '$nombre', '$descripcion', '$link', '$maps', '$zonaSelect')";
+$query = "INSERT INTO `sucursales` (`id`, `sucursal`, `descripcion`, `imagen`, `telefono`, `link`, `maps`, `idZona`) VALUES (NULL, '$nombre', '$descripcion', '$imagen', '$telefono', '$link', '$maps', '$zonaSelect')";
 mysqli_query($conn, $query);
 header('Location: ../admin.php');
 
