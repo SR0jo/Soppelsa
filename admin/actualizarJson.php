@@ -52,6 +52,9 @@ foreach ($queries as $query => $file) {
                 } elseif ($value === 'true' || $value === 'false') {
                     // Convertir los booleanos a bool
                     $value = $value === 'true';
+                } else {
+                    // Manejar caracteres especiales
+                    $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
                 }
             }
         }
@@ -66,9 +69,11 @@ foreach ($queries as $query => $file) {
         }
 
         // Guardar el JSON en un archivo
-        file_put_contents("../Json" . $file, $json);
+        if (!file_put_contents("../Json" . $file, $json)) {
+            echo "Error al guardar JSON en ../Json$file<br>";
+        }
     } else {
-        echo "Error: " . $conn->error;
+        echo "Error en consulta para $file: " . $conn->error . "<br>";
     }
 }
 
@@ -110,3 +115,4 @@ if (isset($actualizar)) {
 
 // Cerrar la conexión
 $conn->close();
+?>
