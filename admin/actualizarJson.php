@@ -25,9 +25,9 @@ $queries = [
     'SELECT * FROM sucursales' => '/sucursales.json',
     'SELECT * FROM promos' => '/promos.json',
     'SELECT * FROM categorias_productos' => '/categorias_productos.json',
-    'SELECT * FROM categoriasIproductos' => '/categoriasIproductos.json',
+    'SELECT * FROM categoriasiproductos' => '/categoriasIproductos.json',
     'SELECT * FROM categorias_sabores' => '/categorias_sabores.json',
-    'SELECT * FROM categoriasIsabores' => '/categoriasIsabores.json',
+    'SELECT * FROM categoriasisabores' => '/categoriasIsabores.json',
     'SELECT sucursales.id, sucursales.sucursal, sucursales.descripcion, sucursales.link, sucursales.maps,zonas.zona
      FROM sucursales
      INNER JOIN zonas ON sucursales.idZona = zonas.id' => '/sucursales.json',
