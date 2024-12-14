@@ -26,7 +26,7 @@ $stmt = $conn->prepare($sql);
 
 // Vincular parámetros y ejecutar la sentencia
 if (!empty($_FILES["imagen"]["name"])) {
-    $stmt->bind_param("sssi", $_POST['titulo'], $_POST['descripcion'], $imagen, $id);
+    $stmt->bind_param("sssi", $_POST['titulo'], $_POST['descripcion'], "../../".$imagen, $id);
 } else {
     $stmt->bind_param("ssi", $_POST['titulo'], $_POST['descripcion'], $id);
 }

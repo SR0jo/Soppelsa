@@ -1,1 +1,8 @@
-[{"id":1,"titulo":"1927-1937","descripcion":"\u25b6 G\u00fcerino Soppelsa llega a Mendoza proveniente de Italia.\r\n\u25b6 Abre su primer local, en la esquina de Avellaneda y Belgrano.\r\n\u25b6 Se instala el cami\u00f3n de helados en el Parque General San Mart\u00edn.","imagen":"\/sus.png"}]
+[
+    {
+        "id": 1,
+        "titulo": "1927-1937",
+        "descripcion": "\u25b6 G\u00fcerino Soppelsa llega a Mendoza proveniente de Italia.\r\n\u25b6 Abre su primer local, en la esquina de Avellaneda y Belgrano.\r\n\u25b6 Se instala el cami\u00f3n de helados en el Parque General San Mart\u00edn.",
+        "imagen": "\/sus.png"
+    }
+]

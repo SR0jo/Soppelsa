@@ -2,20 +2,19 @@
 include("conexion.php");
 if (isset($_GET["form"]))
   $form = $_GET["form"];
-/*
 include("funciones/proteger.php");
-*/
+
 $ttl = 60 * 60 * 72; // 72 horas en segundos
 
 // Establece el tiempo de vida de la cookie de sesión
 session_set_cookie_params($ttl);
-/*
+
 if (!isset($_SESSION["usuario"])) {
   // El usuario no está logueado, redirigir al formulario de inicio de sesión
   header('Location: /Pages/Login/');
   exit;
 }
-*/
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
